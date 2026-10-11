@@ -1,0 +1,60 @@
+{
+    "id": "deltarune_pcdm",
+    "name": "DELTARUNE PCDM",
+    "subtitle": "Capítulo 1: ¡SAL DEL ARMARIO!",
+
+    "version": "v1.0.0",
+    "engineVer": "v0.11.0-dev",
+
+    "chapter": 2,
+
+    "map": "intro",
+    "party": ["lucia"],
+
+    "lightInventory": {
+        "items": ["light/bocadillo_chorizo", "light/monster"],
+        "key_items": ["movil"]
+    },
+    "darkInventory": {
+        "items": ["arepa", "arepa", "ron_miel"],
+        "key_items": ["movil"]
+    },
+
+    "equipment": {
+        "lucia":     { "weapon": "zarpa_peluche",  "armor": ["chapa_anime"] },
+        "yerover":   { "weapon": "guante_terry",   "armor": ["gorra_fatal"] },
+        "gabriel":   { "weapon": "hacha_susie",    "armor": ["sudadera_morada"] },
+        "isra":      { "weapon": "botella_vacia",  "armor": ["capa_capitan"] },
+        "angel":     { "weapon": "abanico_zuzu",   "armor": ["calcetines_femboy"] },
+        "alejandro": { "weapon": "teclado_roblox", "armor": ["corbata_tally"] },
+        "carmen":    { "weapon": "varita_tarot",   "armor": ["sombrero_bruja"] },
+        "david":     { "weapon": "ukelele_wood",   "armor": ["bombin"] },
+        "julio":     { "weapon": "silbato_tren",   "armor": ["chimenea"] },
+        "xibin":     { "weapon": "maletin_shanghai", "armor": ["gafas_aura"] },
+        "dayron":    { "weapon": "plancha_pegatinas", "armor": ["gafas_hetero"] }
+    },
+
+    "money": 40,
+    "maxFollowers": 3,
+
+    "config": {
+        "kristal": {
+            "partyStats": 2,
+            "growStronger": false,
+            "enableRecruits": false,
+            "darkCurrency": "Euros Oscuros",
+            "darkCurrencyShort": "E$",
+            "lightCurrency": "Euros",
+            "lightCurrencyShort": "EUR",
+            "speechBubble": "round",
+            "darkTextboxStyle": "dark",
+            "mercyMessages": true,
+            "checkActDescription": false,
+            "keepTensionAfterBattle": false,
+            "overworldSpells": true
+        }
+    },
+
+    "setWindowTitleAndIcon": true,
+    "dev": false
+}
