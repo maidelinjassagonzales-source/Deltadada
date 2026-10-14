@@ -323,15 +323,21 @@ function PCDM.setParty(ids)
 end
 
 --- Cambio de POV completo: tarjeta + equipo + mapa
-function PCDM.switchPOV(cutscene, ids, map, marker, title, subtitle)
-    cutscene:fadeOut(0.5)
+function PCDM.switchPOV(cutscene, ids, map, marker, title, subtitle, facing)
+    cutscene:wait(cutscene:fadeOut(0.5))
     if title then
         PCDM.povCard(cutscene, title, subtitle)
     end
     PCDM.setParty(ids)
     Game.temp_followers = {}
-    cutscene:loadMap(map, marker or "spawn", "down")
-    cutscene:fadeIn(0.5)
+    cutscene:loadMap(map, marker or "spawn", facing or "down")
+    cutscene:wait(cutscene:fadeIn(0.5))
+end
+
+--- Pantalla negra con texto (narración entre escenas)
+function PCDM.card(cutscene, title, subtitle, time)
+    cutscene:wait(cutscene:fadeOut(0.4))
+    PCDM.povCard(cutscene, title, subtitle, time)
 end
 
 ---------------------------------------------------------------------------
@@ -405,6 +411,194 @@ function PCDM.setupParty(self, t)
     self.lw_armor_default = "light/bandage"
     self.gameover_message = t.gameover
     self.flags = {}
+end
+
+--- Cambiar a un miembro del equipo por otro (en la reunión del Muro).
+function PCDM.swapMember(c, new_id)
+    if PCDM.hasMember(new_id) then
+        c:text("* Ya está en el equipo.")
+        return false
+    end
+    local names = {}
+    for i, chara in ipairs(Game.party) do
+        if i > 1 then table.insert(names, chara:getName()) end
+    end
+    table.insert(names, "Cancelar")
+    c:text("* ¿A quién sustituye " .. PCDM.NAMES[new_id] .. "?[wait:5]\n* (Lucía siempre va en el equipo.)")
+    local ch = c:choicer(names)
+    if ch >= #names then return false end
+    local ids = {}
+    for _, chara in ipairs(Game.party) do table.insert(ids, chara.id) end
+    ids[ch + 1] = new_id
+    PCDM.setParty(ids)
+    Assets.playSound("equip")
+    c:text("* ¡" .. PCDM.NAMES[new_id] .. " se ha unido al equipo!")
+    return true
+end
+
+---------------------------------------------------------------------------
+-- TIENDAS (sencillas, con elecciones)
+---------------------------------------------------------------------------
+--- items: { {id, precio}, ... }. who/face: retrato del tendero.
+function PCDM.shop(c, items, who, face, bye)
+    local cur = Game:getConfig("darkCurrencyShort") or "E$"
+    while true do
+        local names = {}
+        for i = 1, math.min(3, #items) do
+            local data = Registry.getItem(items[i][1])
+            local nm = data and data().name or items[i][1]
+            table.insert(names, nm .. " " .. items[i][2])
+        end
+        table.insert(names, "Salir")
+        c:text("* Tienes " .. (Game.money or 0) .. " " .. cur .. ".[wait:5] ¿Qué te pongo?", face or "neutral", who)
+        local ch = c:choicer(names)
+        if ch > #names - 1 then break end
+        local it = items[ch]
+        if (Game.money or 0) < it[2] then
+            c:text("* No te llega, cariño.", face or "neutral", who)
+        elseif not Game.inventory:addItem(it[1]) then
+            c:text("* No te cabe nada más.", face or "neutral", who)
+        else
+            Game.money = Game.money - it[2]
+            Assets.playSound("locker")
+            c:text("* ¡Gracias por tu compra!", "happy", who)
+        end
+        if #items > 3 then
+            -- rota la lista para enseñar los demás productos
+            table.insert(items, table.remove(items, 1))
+        end
+    end
+    if bye then c:text(bye, face or "neutral", who) end
+end
+
+---------------------------------------------------------------------------
+-- PAGINADOR DE TEXTO: reparte textos largos en varias cajas de 3 líneas
+---------------------------------------------------------------------------
+local function ulen(s)
+    local n = 0
+    for _ in s:gmatch("[^\128-\191]") do n = n + 1 end
+    return n
+end
+
+--- Divide un texto en tokens: comandos [..] (ancho 0), palabras y saltos de línea.
+local function tokenize(line)
+    local tokens = {}
+    local i = 1
+    local len = #line
+    local word = ""
+    local function flush()
+        if word ~= "" then table.insert(tokens, { t = "w", v = word }); word = "" end
+    end
+    while i <= len do
+        local ch = line:sub(i, i)
+        if ch == "[" then
+            local j = line:find("]", i, true)
+            if j then
+                flush()
+                table.insert(tokens, { t = "c", v = line:sub(i, j) })
+                i = j + 1
+            else
+                word = word .. ch
+                i = i + 1
+            end
+        elseif ch == " " then
+            flush()
+            table.insert(tokens, { t = "s" })
+            i = i + 1
+        else
+            word = word .. ch
+            i = i + 1
+        end
+    end
+    flush()
+    return tokens
+end
+
+local function wrapLines(text, width)
+    local lines = {}
+    for hard in (text .. "\n"):gmatch("(.-)\n") do
+        local tokens = tokenize(hard)
+        local cur, cur_len = "", 0
+        local first = true
+        local indent = hard:sub(1, 2) == "* " and 2 or 0
+        local pending_space = false
+        for _, tk in ipairs(tokens) do
+            if tk.t == "c" then
+                cur = cur .. tk.v
+            elseif tk.t == "s" then
+                pending_space = true
+            else
+                local wl = ulen(tk.v)
+                local add = (pending_space and cur_len > 0) and 1 or 0
+                if cur_len > 0 and cur_len + add + wl > width then
+                    table.insert(lines, cur)
+                    first = false
+                    cur, cur_len = string.rep(" ", indent) .. tk.v, indent + wl
+                else
+                    cur = cur .. (add == 1 and " " or "") .. tk.v
+                    cur_len = cur_len + add + wl
+                end
+                pending_space = false
+            end
+        end
+        table.insert(lines, cur)
+    end
+    return lines
+end
+
+--- Devuelve una lista de páginas (cada una de <= max_lines líneas), o nil si ya cabe.
+function PCDM.paginate(text, width, max_lines)
+    width = width or 26
+    max_lines = max_lines or 3
+    if #wrapLines(text, width) <= max_lines then return nil end
+    -- No cabe: los saltos manuales dentro de un párrafo pasan a ser espacios
+    local paras = {}
+    for seg in (text .. "\n"):gmatch("(.-)\n") do
+        local stripped = seg:gsub("^%s+", "")
+        if #paras == 0 or stripped:sub(1, 2) == "* " then
+            table.insert(paras, (#paras == 0) and seg or stripped)
+        else
+            paras[#paras] = paras[#paras] .. " " .. stripped
+        end
+    end
+    local lines = wrapLines(table.concat(paras, "\n"), width)
+    local pages = {}
+    local style = ""
+    for i = 1, #lines, max_lines do
+        local chunk = {}
+        for k = i, math.min(#lines, i + max_lines - 1) do
+            table.insert(chunk, lines[k])
+        end
+        local page = table.concat(chunk, "\n")
+        if i > 1 then
+            page = style .. page:gsub("^%s+", "  ")
+        end
+        table.insert(pages, page)
+        local last_color, last_shake
+        for c in page:gmatch("%[color:[^%]]*%]") do last_color = c end
+        for c in page:gmatch("%[shake:[^%]]*%]") do last_shake = c end
+        if last_color then style = (last_color == "[color:reset]") and "" or last_color end
+        if last_shake then style = style .. last_shake end
+    end
+    return pages
+end
+
+local function fitText(text, has_face, battle)
+    if type(text) ~= "string" then return text end
+    local width = has_face and 25 or 32
+    if battle then width = has_face and 26 or 33 end
+    return PCDM.paginate(text, width, 3) or text
+end
+
+function PCDM.installTextHooks()
+    Utils.hook(WorldCutscene, "text", function(orig, self, text, portrait, actor, options)
+        local has_face = type(portrait) == "string"
+        return orig(self, fitText(text, has_face, false), portrait, actor, options)
+    end)
+    Utils.hook(BattleCutscene, "text", function(orig, self, text, portrait, actor, options)
+        local has_face = type(portrait) == "string"
+        return orig(self, fitText(text, has_face, true), portrait, actor, options)
+    end)
 end
 
 ---------------------------------------------------------------------------

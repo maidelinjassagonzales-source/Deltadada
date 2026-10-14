@@ -20,6 +20,35 @@ function PCDMEnemy:init(actor)
     self.low_health_percentage = 0.35
 end
 
+--- Configura un jefe a partir de una tabla
+function PCDMEnemy:setup(t)
+    self.name = t.name
+    self.max_health = t.hp
+    self.health = t.hp
+    self.attack = t.atk or 6
+    self.defense = t.def or 1
+    self.money = t.money or 100
+    self.experience = 0
+    self.spare_points = t.spare_points or 0
+    self.bad_id = t.bad_id
+    self.lethal = t.lethal or false
+    self.bullet_sprites = t.sprites or { "estrella" }
+    self.bullet_words = t.words
+    self.word_color = t.word_color or { 1, 1, 1 }
+    self.wave_power = t.power or 1.2
+    self.waves = t.waves or { "lluvia" }
+    self.dialogue = t.dialogue or { "..." }
+    self.check = t.check or "..."
+    self.text = t.text or { "* ..." }
+    self.low_health_text = t.low
+    self.spareable_text = t.spareable
+    self.death_lines = t.death
+    if t.disable_mercy then self.disable_mercy = true end
+    for _, a in ipairs(t.acts or {}) do
+        self:act(a[1], a[2], a[3], a[4])
+    end
+end
+
 --- Registra un ACT con datos (texto, piedad, cansancio, función extra)
 function PCDMEnemy:act(name, data, description, party)
     self:registerAct(name, description or "", party)
@@ -73,6 +102,26 @@ function PCDMEnemy:dieForReal(damage, battler)
     self:addChild(death)
     if self.onKilled then self:onKilled() end
     self:defeat("KILLED", true)
+end
+
+-- Los del bando bueno en la ruta FURRYGRAVE solo caen con FurryShock / FURRYGRAVE
+function PCDMEnemy:hurt(amount, battler, on_defeat, color, show_status, attacked)
+    if self.only_furry and not PCDM._furry_hit then
+        amount = 0
+    end
+    if self.min_health and not PCDM._furry_hit and not (on_defeat and on_defeat == self.onDefeatFatal) then
+        if self.health - amount < self.min_health then
+            amount = math.max(0, self.health - self.min_health)
+            if not self.refused_once then
+                self.refused_once = true
+                if self.on_refuse then self:on_refuse() end
+            end
+        end
+    end
+    if self.damage_mult and amount > 0 then
+        amount = math.max(1, math.floor(amount * self.damage_mult))
+    end
+    return super.hurt(self, amount, battler, on_defeat, color, show_status, attacked)
 end
 
 function PCDMEnemy:onDefeat(damage, battler)

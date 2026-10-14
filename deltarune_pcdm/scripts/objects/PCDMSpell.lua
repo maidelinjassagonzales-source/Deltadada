@@ -46,7 +46,14 @@ function PCDMSpell:applyTo(user, t)
     if k == "damage" or k == "damage_all" then
         local dmg = self:calc(user, t)
         t:flash()
-        t:hurt(dmg, user)
+        if t.only_furry and self.id == "furry_shock" then
+            -- en la ruta FURRYGRAVE, FurryShock es mortal para los del bando bueno
+            PCDM._furry_hit = true
+            t:hurt(t.health, user, function() t:freeze() end)
+            PCDM._furry_hit = false
+        else
+            t:hurt(dmg, user)
+        end
     elseif k == "heal" or k == "heal_all" then
         local amount = self:calc(user, t)
         amount = Game.battle:applyHealBonuses(amount, user.chara, t.chara)

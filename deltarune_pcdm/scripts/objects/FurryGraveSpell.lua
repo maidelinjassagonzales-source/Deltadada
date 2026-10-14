@@ -41,7 +41,9 @@ function FurryGraveSpell:update()
         for _, enemy in ipairs(Game.battle.enemies) do
             if enemy then
                 enemy.hit_count = 0
+                PCDM._furry_hit = true
                 enemy:hurt(self.damage + MathUtils.round(MathUtils.random(100)), self.caster, enemy.onDefeatFatal)
+                PCDM._furry_hit = false
                 if enemy.health > 0 then enemy:flash() end
             end
         end

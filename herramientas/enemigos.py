@@ -570,3 +570,61 @@ def tele(f):
 
 def soul_heart(color):
     return alma(color)
+
+
+def espejo():
+    cv = Canvas(24, 34)
+    cv.rect(1, 1, 22, 32, H("c9a227"))
+    cv.rect(3, 3, 18, 28, H("bfe6ff"))
+    cv.line(5, 6, 9, 2, H("ffffff"))
+    cv.line(5, 12, 13, 4, H("ffffff"))
+    cv.outline()
+    return cv
+
+
+def sillas_apiladas():
+    cv = Canvas(30, 40)
+    for i in range(4):
+        y = 30 - i * 8
+        cv.rect(4 + (i % 2) * 2, y, 20, 3, H("9a6232"))
+        cv.rect(4 + (i % 2) * 2, y - 8, 3, 8, H("6a4426"))
+        cv.rect(21 + (i % 2) * 2, y + 3, 3, 6, H("6a4426"))
+    cv.outline()
+    return cv
+
+
+def sticker_dorado(f=0):
+    cv = Canvas(20, 20)
+    cv.ellipse(10, 10, 9, 9, H("f5cd30"))
+    cv.ellipse(10, 10, 7, 7, H("e0b030"))
+    cv.rect(6, 8, 8, 2, H("1b1b1b"))
+    cv.ellipse(10, 13, 3, 2, H("a8322d"))
+    if f:
+        cv.put(4, 4, H("ffffff"))
+        cv.put(15, 6, H("ffffff"))
+    cv.outline()
+    return cv
+
+
+def trono_armario():
+    cv = Canvas(80, 100)
+    wood = H("6a3a1a")
+    cv.rect(4, 10, 72, 90, wood)
+    cv.rect(10, 18, 60, 76, H("0a0012"))
+    cv.tri([(4, 10), (40, 0), (76, 10)], H("8a5a2b"))
+    for i in range(10):
+        cv.put(14 + (i * 13) % 52, 22 + (i * 17) % 68, H("ff7ad9"))
+    cv.rect(30, 2, 20, 6, H("f5cd30"))
+    text3x5(cv, 18, 86, "REY DEL", H("f5cd30"))
+    cv.outline()
+    return cv
+
+
+def cartel(texto, col="8a5a2b"):
+    w = max(30, len(texto) * 4 + 8)
+    cv = Canvas(w, 26)
+    cv.rect(0, 0, w, 14, H(col))
+    text3x5(cv, 4, 4, texto, H("ffffff"))
+    cv.rect(w // 2 - 1, 14, 2, 12, H("5a3a1a"))
+    cv.outline()
+    return cv

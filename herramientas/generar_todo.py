@@ -296,7 +296,9 @@ def export_character(cid, spec):
         st, _ = build_overworld(spec, "down", 0, dark)
         fallen = st.im.rotate(90, expand=True)
         save(fallen, "chars/%s/%s/fallen" % (cid, sub))
-        for e in spec.get("exprs", ["neutral"]):
+        all_exprs = ["neutral", "happy", "smile", "grin", "angry", "annoyed", "sad", "surprised", "smug", "blush",
+                     "crying", "scared", "closed", "shout", "dead"]
+        for e in all_exprs:
             save(build_portrait(spec, e, dark=dark), "face/%s%s/%s" % (cid, "_dw" if dark else "", e))
         battle = cid in PARTY or cid in BOSSES
         if battle and dark:
@@ -383,6 +385,15 @@ def export_enemies():
         save(EN.caballo(fr), "objects/caballo_%d" % (fr + 1))
         save(EN.tele(fr), "objects/tele_%d" % (fr + 1))
         save(EN.blaster(fr), "objects/blaster_%d" % (fr + 1))
+    save(EN.espejo(), "objects/espejo")
+    save(EN.sillas_apiladas(), "objects/sillas_apiladas")
+    save(EN.sticker_dorado(0), "objects/sticker_dorado_1")
+    save(EN.sticker_dorado(1), "objects/sticker_dorado_2")
+    save(EN.trono_armario(), "objects/trono_armario")
+    for nm, txt, col in (("taberna", "TABERNA", "7a2a3a"), ("tacos", "TACOS FER", "2fa04a"), ("modas", "MODAS SHANGHAI", "c9a227"),
+                         ("plato", "EL HORMIGUERO", "1e5bb8"), ("casablanca", "CASA BLANCA", "b5523a"), ("teror", "TEROR", "2f6a2f"),
+                         ("instituto", "IES PCDM", "4a7ab0")):
+        save(EN.cartel(txt, col), "objects/cartel_" + nm)
     save(EN.armario(False), "objects/armario_cerrado")
     save(EN.armario(True), "objects/armario_abierto")
     for name, col in (("roja", "ff2a2a"), ("rosa", "ff9ccf"), ("amarilla", "ffd23f"), ("verde", "5fbf2f"),

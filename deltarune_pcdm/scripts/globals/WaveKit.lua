@@ -34,4 +34,16 @@ function WaveKit.arena()
     return a.left, a.top, a.right, a.bottom, a.x, a.y
 end
 
+--- Si el enemigo tiene frases para interrumpir (Aroy.exe, Andrés...), a veces
+--- habla en mitad del ataque: el combate se PAUSA para poder leerlo.
+function WaveKit.maybeInterject(wave, delay)
+    local e = WaveKit.enemy(wave)
+    if not e or not e.interjections or #e.interjections == 0 then return end
+    if love.math.random() > (e.interject_chance or 0.6) then return end
+    wave.timer:after(delay or 2.2, function()
+        local line = table.remove(e.interjections, love.math.random(1, #e.interjections))
+        PCDM.interject(wave, { line }, e.interject_actor or "aroy", e.interject_face or "shout")
+    end)
+end
+
 return WaveKit

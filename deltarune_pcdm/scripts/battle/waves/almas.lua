@@ -11,6 +11,7 @@ function Wave:init()
 end
 
 function Wave:onStart()
+    WaveKit.maybeInterject(self)
     local p = WaveKit.power(self)
     local n = 6 + math.floor(p * 2)
     for i = 1, n do

@@ -15,6 +15,9 @@ function Mod:init()
         return DecoSprite(data.x, data.y, data.properties)
     end)
 
+    -- Los textos largos se reparten solos en varias cajas
+    PCDM.installTextHooks()
+
     -- Si alguien habla en mitad de un ataque, el combate se pausa para poder leerlo
     Utils.hook(Battle, "updateWaves", function(orig, battle)
         if PCDM.battle_paused then return end
@@ -56,6 +59,22 @@ function Mod:postInit(new_file)
     end
     if new_file then
         Game.world:startCutscene("intro.aroy")
+    end
+end
+
+-- Fiestas del Pino: con cada chupito la cámara se tambalea un poco más
+function Mod:postUpdate()
+    local w = Game.world
+    if w and w.camera then
+        local m = w.pcdm_mareo or 0
+        if m > 0 then
+            local t = love.timer.getTime()
+            w.camera:setOffset(math.sin(t * 1.7) * m * 3, math.cos(t * 1.3) * m * 2)
+            w.pcdm_mareo_on = true
+        elseif w.pcdm_mareo_on then
+            w.camera:setOffset(0, 0)
+            w.pcdm_mareo_on = false
+        end
     end
 end
 

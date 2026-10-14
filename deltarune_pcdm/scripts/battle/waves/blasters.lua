@@ -47,6 +47,7 @@ function Wave:fire()
 end
 
 function Wave:onStart()
+    WaveKit.maybeInterject(self)
     local p = WaveKit.power(self)
     self:fire()
     self.timer:every(1.1 / p, function() self:fire() end)

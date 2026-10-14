@@ -7,6 +7,7 @@ function Wave:init()
 end
 
 function Wave:onStart()
+    WaveKit.maybeInterject(self)
     local p = WaveKit.power(self)
     self.timer:every(0.8 / p, function()
         local l, t, r, b, cx, cy = WaveKit.arena()

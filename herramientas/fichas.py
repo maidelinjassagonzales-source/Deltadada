@@ -14,6 +14,14 @@ FICHAS = {
         weapon="paw", magic_color="ff7ad9", battle_item="bottle",
         exprs=["neutral", "happy", "smile", "sad", "surprised", "angry", "blush", "crying", "scared", "closed"],
     ),
+    "lucia_sg": dict(
+        name="Lucía", skin="claro", hair="4a2f2a", hair_style="messy", eye_color="3a2340", hat="cap", hat_color="3a3a3a",
+        outfit=dict(top="6a6a72", bottom="3b3b4f", legs="3b3b4f", shoes="5a5a5a"),
+        dark=dict(),
+        outfit_dark=dict(top="5a5a62", bottom="2a2a33", legs="2a2a33", shoes="4a4a4a"),
+        weapon="paw", magic_color="9a9aa8", battle_item="bottle",
+        exprs=["neutral", "sad", "crying", "closed", "scared"],
+    ),
     "yerover": dict(
         name="Yerover", skin="rosado", hair="f2d16b", hair_style="ponytail_long",
         hat="cap", hat_color="d12f2f",
@@ -258,7 +266,7 @@ FICHAS = {
 }
 
 # Party jugable (con sprites de combate)
-PARTY = ["lucia", "yerover", "gabriel", "isra", "angel", "alejandro", "carmen", "david", "julio", "xibin", "dayron"]
+PARTY = ["lucia", "yerover", "gabriel", "isra", "angel", "alejandro", "carmen", "david", "julio", "xibin", "dayron", "andres", "lucia_sg"]
 
 # Personajes que también luchan como jefes (sprite de combate mirando a la izquierda)
 BOSSES = ["pablo", "dayron", "angelpedro", "andres", "trump", "netanyahu", "abascal", "vito", "motos", "gabriel",
