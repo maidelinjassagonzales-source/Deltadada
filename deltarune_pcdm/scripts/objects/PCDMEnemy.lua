@@ -49,16 +49,6 @@ function PCDMEnemy:setup(t)
     end
 end
 
--- Los jefes con nombre (Vito, Trump, Dayron...) se ven más grandes que el equipo
-function PCDMEnemy:onAdd(parent)
-    super.onAdd(self, parent)
-    local id = self.actor and self.actor.id or ""
-    if not self.only_furry and id:sub(-5) == "_boss" and not self.pcdm_scaled then
-        self.pcdm_scaled = true
-        self:setScale(3)
-    end
-end
-
 --- Registra un ACT con datos (texto, piedad, cansancio, función extra)
 function PCDMEnemy:act(name, data, description, party)
     self:registerAct(name, description or "", party)
