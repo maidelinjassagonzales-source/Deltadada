@@ -321,6 +321,18 @@ local function stringsOf(src)
         if c == "-" and src:sub(i, i + 1) == "--" then
             local j = src:find("\n", i, true) or n
             i = j + 1
+        elseif c == "[" and src:sub(i, i + 1) == "[[" then
+            -- cadena larga [[ ... ]] (código, no diálogo): se salta entera
+            local j = src:find("]]", i + 2, true) or n
+            i = j + 2
+        elseif c == "'" then
+            -- cadena con comillas simples: se salta respetando los escapes
+            local j = i + 1
+            while j <= n and src:sub(j, j) ~= "'" do
+                if src:sub(j, j) == "\\" then j = j + 1 end
+                j = j + 1
+            end
+            i = j + 1
         elseif c == '"' then
             local j, buf = i + 1, {}
             while j <= n do
