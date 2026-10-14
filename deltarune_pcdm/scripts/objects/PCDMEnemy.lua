@@ -132,6 +132,16 @@ function PCDMEnemy:hurt(amount, battler, on_defeat, color, show_status, attacked
     return super.hurt(self, amount, battler, on_defeat, color, show_status, attacked)
 end
 
+-- next_text: texto que sale una vez al empezar el turno siguiente
+function PCDMEnemy:getEncounterText()
+    if self.next_text then
+        local text = self.next_text
+        self.next_text = nil
+        return text
+    end
+    return super.getEncounterText(self)
+end
+
 function PCDMEnemy:onDefeat(damage, battler)
     if self.lethal or self.bad_id then
         self:dieForReal(damage, battler)

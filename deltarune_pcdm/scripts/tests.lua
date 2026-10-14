@@ -793,6 +793,61 @@ function tests.sg_guardar(t)
     t:finish()
 end
 
+-- Ruta FURRYGRAVE contra Gabriel: Dayron ataca y Lucía lanza una magia (y al revés) justo cuando
+-- Gabriel se niega a caer. El turno tiene que terminar y el combate seguir.
+function tests.gabriel_turno(t)
+    t:wait(0.5)
+    PCDM.setFlag("ruta_furrygrave", true)
+    PCDM.setParty({ "dayron", "lucia" })
+    Game.world:loadMap("dw/sg_cumbre", "spawn", "up")
+    for _, c in ipairs(Game.party) do c.stats.health = 9999; c.health = 9999 end
+    t:wait(0.5)
+    Game:encounter("sg_gabriel", true)
+    t:waitBattle(5)
+    local b = Game.battle
+    local g = b.enemies[1]
+    local ok = true
+    local function waitSelect(timeout)
+        local start = love.timer.getTime()
+        while Game.battle and love.timer.getTime() - start < timeout do
+            if b.state == "ACTIONSELECT" and b.current_selecting == 1 then return true end
+            if b.state == "BATTLETEXT" or b.state == "ATTACKING" or b.state == "ENEMYDIALOGUE"
+                or b.state == "SHORTACTTEXT" then
+                t:press("z")
+            end
+            t:wait(0.3)
+        end
+        return Game.battle == nil
+    end
+    local function spell(id)
+        local s = Registry.createSpell(id)
+        return { name = s:getName(), tp = s:getTPCost(), data = s }
+    end
+    local function turn(name, dayron, lucia)
+        waitSelect(20)
+        g.health = 5
+        g.refused_once = false
+        Game:setTension(100)
+        local turn_before = b.turn_count
+        b:pushAction(dayron[1], dayron[2] == "all" and b:getActiveEnemies() or g, dayron[3], 1)
+        b:pushAction(lucia[1], lucia[2] == "all" and b:getActiveEnemies() or g, lucia[3], 2)
+        local done = waitSelect(40)
+        t:shot(name)
+        t:log("turno", name, done and "TERMINA" or ("ATASCADO en " .. tostring(b.state) .. "/" .. tostring(b.substate)),
+            "| Gabriel PV", g.health, "| turnos", turn_before, "->", b.turn_count)
+        if not done then ok = false end
+        return done
+    end
+    if turn("ataque_y_magia", { "ATTACK" }, { "SPELL", "one", spell("furry_shock") })
+        and turn("magia_y_ataque", { "SPELL", "one", spell("pegatinazo") }, { "ATTACK" })
+        and turn("dos_magias", { "SPELL", "one", spell("pegatinazo") }, { "SPELL", "one", spell("furry_shock") }) then
+        turn("furrygrave", { "ATTACK" }, { "SPELL", "all", spell("furrygrave") })
+        t:log("con FURRYGRAVE: Gabriel PV", g.health, "estado", tostring(g.done_state), "combate", Game.battle and "sigue" or "terminado")
+        if g.done_state ~= "KILLED" then ok = false end
+    end
+    t:finish(ok)
+end
+
 -- Comprueba que la música de Drive se encuentra, se invierte y suena
 function tests.musica(t)
     t:wait(0.5)

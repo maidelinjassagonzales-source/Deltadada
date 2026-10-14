@@ -15,9 +15,11 @@ function enemy:init()
         death = { "Susie...\nnunca...\nse rendiría..." },
     })
     self.min_health = 1
+    -- se avisa en su bocadillo y en el texto del turno siguiente: un texto en mitad de un
+    -- ataque o una magia dejaba el combate congelado
     self.on_refuse = function(e)
         e.dialogue_override = "¡¡NO PIENSO\nCAER!!"
-        Game.battle:battleText("* Gabriel se niega a caer.\n* Solo algo MUY poderoso podría acabar con él.")
+        e.next_text = "* Gabriel se niega a caer.\n* Solo algo MUY poderoso podría acabar con él."
     end
     self:act("Hablar", { text = { "* \"Ríndete, retramonguer.\"", "* \"Jamás.\"" } })
 end

@@ -771,10 +771,17 @@ function PCDM.installTextHooks()
         return orig(self, fitText(text, has_face, true), portrait, actor, options)
     end)
     -- textos de ACTUAR / magia / objetos: se pueden avanzar, así que se paginan
+    -- Si un texto sale mientras ya hay otro (p. ej. durante una magia), al cerrarlo se vuelve
+    -- a donde iba el primero: si no, el combate se quedaba con la caja vacía para siempre.
     Utils.hook(Battle, "battleText", function(orig, self, text, post_func)
         if type(text) == "string" or type(text) == "table" then
             text = PCDM.pages(PCDM.translate(text), 36, 3)
             if #text == 1 then text = text[1] end
+        end
+        if self:getState() == "BATTLETEXT" then
+            if post_func == nil then post_func = self.pcdm_text_return end
+        else
+            self.pcdm_text_return = type(post_func) == "string" and post_func or self:getState()
         end
         return orig(self, text, post_func)
     end)
