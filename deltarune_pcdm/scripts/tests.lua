@@ -208,10 +208,14 @@ function tests.recorrido(t)
             t:log("de vuelta al menú: partida terminada")
             break
         end
+        -- las teclas solo se pulsan en cinemáticas y combates; andando, el caminante
+        -- se mueve solo (si no, Z no para de hablar con los muebles)
         if freeRoam() and map then
             idle = idle + 0.25
+            t:auto(nil)
         else
             idle = 0
+            t:auto({ "z", "left", "z" }, 0.09)
         end
         if idle >= 1 then
             idle = 0
@@ -276,6 +280,23 @@ function tests.recorrido(t)
     end
     t:log("resumen:", table.concat(killed, " "))
     t:log("ruta:", PCDM.route(), "final:", tostring(PCDM.flag("final_visto")))
+end
+
+-- Un solo combate para ver cómo queda: PCDM_COMBATE=<encuentro>
+function tests.jefe(t)
+    t:wait(0.5)
+    PCDM.setParty({ "lucia", "yerover", "angel" })
+    Game.world:loadMap("dw/llanuras_1", "spawn", "down")
+    for _, e in ipairs(Game.world.stage:getObjects(ChaserEnemy)) do e:remove() end
+    Game:encounter(os.getenv("PCDM_COMBATE") or "vito", true)
+    t:waitBattle(5)
+    t:wait(3)
+    t:shot("inicio")
+    t:auto({ "z" }, 0.1)
+    t:wait(14)
+    t:shot("turno")
+    t:auto(nil)
+    t:finish()
 end
 
 -- Todos los combates del Dark World, uno detrás de otro, pulsando Z (siempre LUCHAR)
