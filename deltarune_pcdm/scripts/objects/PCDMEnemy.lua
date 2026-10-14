@@ -18,6 +18,13 @@ function PCDMEnemy:init(actor)
     self.exit_on_defeat = true
     self.tired_percentage = 0.35
     self.low_health_percentage = 0.35
+    -- el ACT "Check" de Kristal, en castellano
+    for _, a in ipairs(self.acts) do
+        if a.name == "Check" then
+            a.name = "Comprobar"
+            a.description = ""
+        end
+    end
 end
 
 --- Configura un jefe a partir de una tabla
@@ -56,6 +63,7 @@ function PCDMEnemy:act(name, data, description, party)
 end
 
 function PCDMEnemy:onAct(battler, name)
+    if name == "Comprobar" then name = "Check" end
     local d = self.act_data[name]
     if d then
         if d.mercy then self:addMercy(d.mercy) end

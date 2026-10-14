@@ -367,7 +367,8 @@ function tests.textos(t)
         for _, path in ipairs(files(base .. sub, {})) do
             for _, s in ipairs(stringsOf(love.filesystem.read(path))) do
                 local plain = s:gsub("%[[^%]]*%]", "")
-                if #plain > 20 and (plain:find("^%* ") or plain:find("^%(") or plain:find("\n")) then
+                -- los patrones de búsqueda (con %) no se muestran nunca
+                if #plain > 20 and not s:find("%%") and (plain:find("^%* ") or plain:find("^%(") or plain:find("\n")) then
                     total = total + 1
                     for _, face in ipairs({ true, false }) do
                         local kind = battle and "battle" or "world"

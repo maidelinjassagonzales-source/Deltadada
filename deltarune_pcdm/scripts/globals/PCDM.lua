@@ -611,7 +611,58 @@ end
 -- Caracteres que caben por línea (fuente main_mono: 16 px por letra)
 --   diálogo: 427 px con retrato (26) / 543 px sin retrato (33)
 --   combate: 494 px con retrato (30) / 610 px sin retrato (38); se deja algo de margen
+-- Mensajes que Kristal escribe en inglés -> castellano (patrones de Lua, en orden)
+PCDM.TRADUCCIONES = {
+    { "^%* You won!\n%* Got (%d+) EXP and (%d+) ([^\n]-)%.$", "* ¡Has ganado!\n* Obtienes %1 EXP y %2 %3." },
+    { "^%* You won!\n%* Got (%d+) ([^\n]-)%.\n%* ([^\n]-) became stronger%.$", "* ¡Has ganado!\n* Obtienes %1 %2.\n* %3 se ha hecho más fuerte." },
+    { "^%* You won!", "* ¡Has ganado!" },
+    { "%* Your SOUL shined its power on\n(.-)!", "* ¡Tu ALMA brilló con fuerza\nsobre %1!" },
+    { "^%* (.-) spared (.-)!\n%* But its name wasn't %[color:yellow%]YELLOW%[color:reset%]%.%.%.",
+        "* %1 perdonó a %2.\n* ...Pero su nombre no estaba en [color:yellow]AMARILLO[color:reset]..." },
+    { "^%* (.-) spared (.-)!$", "* ¡%1 perdonó a %2!" },
+    { "%* %(Try using (.-)'s %[color:blue%](.-)%[color:reset%]!%)", "* (¡Prueba [color:blue]%2[color:reset] de %1!)" },
+    { "%* %(Try using %[color:blue%]ACTs%[color:reset%]!%)", "* (¡Prueba a [color:blue]ACTUAR[color:reset]!)" },
+    { "^%* (.-) used the (.-)!$", "* ¡%1 usó: %2!" },
+    { "^%* (.-) cast (.-)!$", "* ¡%1 usó %2!" },
+    { "%* %(The chest is empty%.%)", "* (El cofre está vacío.)" },
+    { "%* %(You opened the treasure\nchest%.%)", "* (Abres el cofre.)" },
+    { "%* %(Inside was (.-)%.%)", "* (Dentro había %1.)" },
+    { "%* %((.-) was added to your (.-)%.%)", "* (%1 se guarda en tus %2.)" },
+    { "%* %(You have too many (.-) to take (.-)%.%)", "* (Llevas demasiados %1 para coger %2.)" },
+    { "%* Your HP was maxed out%.", "* Tus PV están al máximo." },
+    { "%* You recovered (%d+) HP!", "* Recuperas %1 PV." },
+    { "^%* You equipped the (.-)%.$", "* Te equipas: %1." },
+    { "^%* You bid a quiet farewell to the (.-)%.$", "* Te despides en silencio de: %1." },
+    { "^%* You put the (.-) on the ground and gave it a little pat%.$", "* Dejas %1 en el suelo y le das una palmadita." },
+    { "^%* You threw the (.-) on the ground like the piece of trash it is%.$", "* Tiras %1 al suelo como la basura que es." },
+    { "^%* You abandoned the (.-)%.$", "* Abandonas: %1." },
+    { "^%* The (.-) was thrown away%.$", "* Has tirado: %1." },
+    { "%* %(You felt tense%.%)", "* (Sientes tensión.)" },
+    { "%* %(%.%.%. try using it in battle%.%)", "* (...pruébalo en combate.)" },
+    { "^%* A skirmish breaks out!$", "* ¡Empieza la pelea!" },
+    { "%[color:yellow%]KEY ITEMs%[color:reset%]", "[color:yellow]OBJETOS CLAVE[color:reset]" },
+    { "%[color:yellow%]LIGHT ITEMs%[color:reset%]", "[color:yellow]OBJETOS[color:reset]" },
+    { "%[color:yellow%]ITEMs%[color:reset%]", "[color:yellow]OBJETOS[color:reset]" },
+    { "%[color:yellow%]WEAPONs%[color:reset%]", "[color:yellow]ARMAS[color:reset]" },
+    { "%[color:yellow%]ARMORs%[color:reset%]", "[color:yellow]PROTECCIONES[color:reset]" },
+}
+
+--- Traduce los mensajes en inglés del motor (texto o lista de textos).
+function PCDM.translate(text)
+    if type(text) == "table" then
+        local out = {}
+        for i, t in ipairs(text) do out[i] = PCDM.translate(t) end
+        return out
+    end
+    if type(text) ~= "string" or not text:find("[A-Za-z]") then return text end
+    for _, tr in ipairs(PCDM.TRADUCCIONES) do
+        text = text:gsub(tr[1], tr[2])
+    end
+    return text
+end
+
 local function fitText(text, has_face, battle)
+    text = PCDM.translate(text)
     if type(text) ~= "string" then return text end
     local width = has_face and 26 or 33
     if battle then width = has_face and 29 or 36 end
@@ -650,7 +701,7 @@ function PCDM.installTextHooks()
     -- textos de ACTUAR / magia / objetos: se pueden avanzar, así que se paginan
     Utils.hook(Battle, "battleText", function(orig, self, text, post_func)
         if type(text) == "string" or type(text) == "table" then
-            text = PCDM.pages(text, 36, 3)
+            text = PCDM.pages(PCDM.translate(text), 36, 3)
             if #text == 1 then text = text[1] end
         end
         return orig(self, text, post_func)
@@ -658,7 +709,7 @@ function PCDM.installTextHooks()
     -- el texto de ambiente del turno no se avanza: si no cabe, se queda la primera caja
     Utils.hook(Battle, "setEncounterText", function(orig, self, options, instant)
         if type(options) == "table" and type(options.text) == "string" then
-            options.text = PCDM.paginate(options.text, options.portrait and 29 or 36, 3)[1]
+            options.text = PCDM.paginate(PCDM.translate(options.text), options.portrait and 29 or 36, 3)[1]
         end
         return orig(self, options, instant)
     end)
