@@ -1,0 +1,27 @@
+MÚSICA DEL MOD
+==============
+Cada parte del juego busca su música en una carpeta con su nombre:
+assets/music/<sección>/<cualquier archivo .ogg/.mp3/.wav>
+
+Ya incluidas (carpeta de Drive "deltarunekdadas"):
+  jefe_motos/pablo_motos_revert.ogg  ya invertida; el mod la ralentiza (si pones otra
+                                     sin "revert" en el nombre, el mod la invierte solo)
+  aroy/aroy_habla.mp3
+  jefe_gabriel/gabriel.mp3
+  ../sounds/Dayron.ogg               suena distorsionada en la pelea Gabriel vs Dayron
+                                     (tiene que ser Ogg Vorbis; LÖVE no lee Opus)
+
+Secciones: intro, aroy, casa_pablo, casa_lucia, calle, instituto, aula, patio,
+casa_andres, fiestas_pino, combate_light, caida, llanuras, bosque, plato,
+cortijo, muro, torre_aroy, combate, jefe, jefe_motos, jefe_gabriel,
+jefe_dayron, jefe_aroy, jefe_andres, papa_francisco, tienda, final_neutral,
+final_verdadero, final_furrygrave, ruta_furrygrave, jefe_vito, jefe_angelpedro,
+jefe_abascal, jefe_pablo, jefe_trump, jefe_netanyahu.
+
+Si tienes DELTARUNE / UNDERTALE instalados, el mod usa su música en cada sección
+(scripts/globals/MusicaJuegos.lua decide qué canción va en cada momento).
+Orden: tus canciones de esta carpeta > música de tus juegos > pcdm_<sección>.ogg.
+Las canciones pcdm_<sección>.ogg son música original compuesta para el mod
+(herramientas/musica_chip.py). Si metes otra canción en una carpeta, borra la
+pcdm_*.ogg de esa carpeta y sonará la tuya.
+Para copiar música de tus juegos: python3 herramientas/instalar_musica.py --help
