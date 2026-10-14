@@ -126,6 +126,7 @@ return {
         c:text("* Sí...[wait:5] Gracias, Gabriel.[wait:5] De verdad.", "smile", "lucia_lw")
     end,
     silla = function(c)
+        if not PCDM.flag("patio_dayron") or PCDM.flag("patio_silla") then return end
         local ap = c:getCharacter("angelpedro_lw")
         c:text("* Angel Pedro levanta una silla por encima\n  de la cabeza...")
         Assets.playSound("pcdm_silla")

@@ -234,8 +234,7 @@ return {
           x = 680, y = 240, width = 40, height = 280, rotation = 0, visible = true,
           properties = {
           ["cutscene"] = "lw_patio.silla",
-          ["once"] = true,
-          ["cond"] = "pcdm_patio_dayron"
+          ["once"] = false
         }
         }
       }

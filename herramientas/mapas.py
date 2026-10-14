@@ -206,7 +206,8 @@ m.npc_named("julio", 15, 9, "julio_lw", "lw_patio.julio", facing="left")
 m.npc_named("dayron", 9, 8, "dayron_lw", "lw_patio.dayron_npc", facing="left", cond="not pcdm_patio_dayron")
 m.npc_named("angelpedro", 19, 9, "angelpedro_lw", "lw_patio.angelpedro", facing="right", cond="not pcdm_patio_silla")
 m.script(8, 3, 1, 10, "lw_patio.dayron")
-m.script(17, 6, 1, 7, "lw_patio.silla", cond="pcdm_patio_dayron")
+# sin cond: la condición solo se mira al cargar el mapa y Gabriel no sale del patio
+m.script(17, 6, 1, 7, "lw_patio.silla", once=False)
 m.marker("spawn", 3, 10)
 
 # ---------------------------------------------------------------- Casa de Andrés
