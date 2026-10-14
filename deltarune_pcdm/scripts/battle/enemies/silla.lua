@@ -37,7 +37,7 @@ function enemy:init()
             "* Te sientas con muchísimo cuidado.",
             "* La silla llora de felicidad.\n* ¡Por fin alguien la usa!"
         } }, nil, nil)
-    self:act("Pegamento", { mercy = 35, text = "* Le pones pegamento Imedio en la\npata.\n* Casi como nueva." }, nil, nil)
+    self:act("Pegamento", { mercy = 35, text = "* Le pones pegamento Imedio en la\n  pata.\n* Casi como nueva." }, nil, nil)
     self:act("Culpar a Angel Pedro", { mercy = 25, text = "* ¡Todo es culpa de Angel Pedro!\n* La silla asiente con el respaldo." }, nil, nil)
 end
 

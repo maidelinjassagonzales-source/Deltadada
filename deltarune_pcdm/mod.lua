@@ -30,6 +30,24 @@ function Mod:init()
         return orig(battle, old, new, reason)
     end)
 
+    -- Las habitaciones más pequeñas que la pantalla salen centradas, como en DELTARUNE
+    local function centerSmall(cam, x, y, bx, by, bw, bh)
+        if not bx then bx, by, bw, bh = cam:getBounds() end
+        if bw < cam.width / cam.zoom_x then x = bx + bw / 2 end
+        if bh < cam.height / cam.zoom_y then y = by + bh / 2 end
+        return x, y
+    end
+    Utils.hook(Camera, "getMinPosition", function(orig, cam, bx, by, bw, bh)
+        local x, y = orig(cam, bx, by, bw, bh)
+        if not cam.keep_in_bounds then return x, y end
+        return centerSmall(cam, x, y, bx, by, bw, bh)
+    end)
+    Utils.hook(Camera, "getMaxPosition", function(orig, cam, bx, by, bw, bh)
+        local x, y = orig(cam, bx, by, bw, bh)
+        if not cam.keep_in_bounds then return x, y end
+        return centerSmall(cam, x, y, bx, by, bw, bh)
+    end)
+
     -- La música de cada mapa es una "sección": se busca en assets/music/<seccion>/
     Utils.hook(World, "transitionMusic", function(orig, world, next, fade_out)
         if type(next) == "string" and next ~= "" and not Assets.getMusicPath(next) then
@@ -54,6 +72,8 @@ end
 
 function Mod:postInit(new_file)
     if os.getenv("PCDM_TEST") then
+        -- en las pruebas automáticas los combates del Light World acaban de un golpe
+        PCDM.test_easy = os.getenv("PCDM_TEST_FACIL") ~= "0"
         Game.stage:addChild(PCDMTestRunner(os.getenv("PCDM_TEST")))
         return
     end

@@ -25,6 +25,7 @@ function UTBattle:init(config)
     self.cfg = config
     self.e = config.enemy
     self.e.max_hp = self.e.max_hp or self.e.hp
+    if PCDM.test_easy then self.e.hp = 1 end
     self.e.mercy = 0
     self.e.spareable = false
     self.turn = 0
@@ -104,7 +105,8 @@ end
 function UTBattle:showText(lines, next_state, menu_text, callback)
     self:clearText()
     self.box_target = { x = BOX_FULL.x, y = BOX_FULL.y, w = BOX_FULL.w, h = BOX_FULL.h }
-    if type(lines) == "string" then lines = { lines } end
+    lines = PCDM.pages(lines, 33, 3)
+    if menu_text then lines = { lines[1] } end
     local t = DialogueText(lines, BOX_FULL.x + 26, BOX_FULL.y + 18, BOX_FULL.w - 40, BOX_FULL.h - 20, { style = "none" })
     t.layer = 10
     self:addChild(t)
@@ -691,7 +693,10 @@ function UTBattle:draw()
             love.graphics.setLineWidth(1)
         end
     elseif s == "DODGE" then
-        -- balas
+        -- balas (solo se ven dentro de la caja, como en UNDERTALE)
+        local bx = self.box
+        Draw.pushScissor()
+        Draw.scissor(bx.x + 2.5, bx.y + 2.5, bx.w - 5, bx.h - 5)
         for _, b in ipairs(self.bullets) do
             if b.text then
                 love.graphics.setFont(self.small)
@@ -704,6 +709,7 @@ function UTBattle:draw()
                 love.graphics.rectangle("fill", b.x - b.w / 2, b.y - b.h / 2, b.w, b.h)
             end
         end
+        Draw.popScissor()
         -- alma
         if self.soul.inv <= 0 or math.floor(self.soul.inv * 10) % 2 == 0 then
             Draw.setColor(1, 0, 0, 1)

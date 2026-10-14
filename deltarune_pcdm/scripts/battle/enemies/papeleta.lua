@@ -34,12 +34,12 @@ function enemy:init()
     self.text = {
         "* La Papeleta de Vox grita \"¡España!\".",
         "* Huele a sobre electoral.",
-        "* La Papeleta se ha puesto una pulsera\ncon la bandera."
+        "* La Papeleta se ha puesto una pulsera\n  con la bandera."
     }
     self.low_health_text = "* La Papeleta se está arrugando."
     self:act("Romperla", { mercy = 50, text = "* La rompes en pedacitos.\n* Lucía aplaude." }, nil, nil)
-    self:act("Votar a otro", { mercy = 40, text = "* Votas a otro partido.\n* La Papeleta se queda sin sitio en la\nurna." }, nil, nil)
-    self:act("Explicar historia", { mercy = 30, text = "* Le explicas que Al-Ándalus duró ocho\nsiglos.\n* La Papeleta se queda en blanco." }, nil, nil)
+    self:act("Votar a otro", { mercy = 40, text = "* Votas a otro partido.\n* La Papeleta se queda sin sitio en la\n  urna." }, nil, nil)
+    self:act("Explicar historia", { mercy = 30, text = "* Le explicas que Al-Ándalus duró ocho\n  siglos.\n* La Papeleta se queda en blanco." }, nil, nil)
 end
 
 return enemy

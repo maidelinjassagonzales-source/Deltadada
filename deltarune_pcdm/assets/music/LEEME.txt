@@ -1,0 +1,19 @@
+MÚSICA DEL MOD
+==============
+Cada parte del juego busca su música en una carpeta con su nombre:
+assets/music/<sección>/<cualquier archivo .ogg/.mp3/.wav>
+
+Canciones de la carpeta de Drive "deltarunekdadas":
+  jefe_motos/    "musica de lucha contra pablo motos..."  (el mod la invierte y la ralentiza solo)
+  aroy/          "musica que suena cuando aroy habla"
+  jefe_gabriel/  "musica que suena cuando luchas contra gabriel"
+  ../sounds/Dayron.ogg   (suena distorsionada en la pelea Gabriel vs Dayron)
+
+Secciones: intro, aroy, casa_pablo, casa_lucia, calle, instituto, aula, patio,
+casa_andres, fiestas_pino, combate_light, caida, llanuras, bosque, plato,
+cortijo, muro, torre_aroy, combate, jefe, jefe_motos, jefe_gabriel,
+jefe_dayron, jefe_aroy, jefe_andres, papa_francisco, tienda, final_neutral,
+final_verdadero, final_furrygrave, ruta_furrygrave.
+
+Lo más fácil: python3 herramientas/instalar_musica.py --help
+Si una carpeta está vacía, suena la música que trae Kristal.

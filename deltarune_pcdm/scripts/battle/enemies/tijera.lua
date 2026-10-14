@@ -29,7 +29,7 @@ function enemy:init()
     self.text = {
         "* La Tijerita se abre y se cierra.",
         "* Ris, ras. Ris, ras.",
-        "* La Tijerita apunta a tu cola con\nmalas intenciones."
+        "* La Tijerita apunta a tu cola con\n  malas intenciones."
     }
     self.low_health_text = "* A la Tijerita se le ha mellado el filo."
     self:act("Darle papel", { mercy = 40, text = "* Le das un folio de apuntes.\n* La Tijerita lo corta en tiras.\n* Está feliz." }, nil, nil)

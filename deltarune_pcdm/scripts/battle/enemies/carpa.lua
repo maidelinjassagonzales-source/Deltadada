@@ -38,7 +38,7 @@ function enemy:init()
         "* Huele a campus americano."
     }
     self.low_health_text = "* La Carpa se está desmontando."
-    self:act("Demostrar que no", { mercy = 60, text = "* Le demuestras que se equivoca, con\nfuentes y todo.\n* La Carpa no sabe qué hacer." }, nil, nil)
+    self:act("Demostrar que no", { mercy = 60, text = "* Le demuestras que se equivoca, con\n  fuentes y todo.\n* La Carpa no sabe qué hacer." }, nil, nil)
     self:act("No entrar al trapo", { mercy = 40, text = "* No te sientas a debatir.\n* La Carpa se desinfla un poco." }, nil, nil)
     self:act("Pedir fuentes", { mercy = 30, text = "* \"¿Fuentes?\"\n* La Carpa busca en sus bolsillos.\n* No tiene bolsillos." }, nil, nil)
 end

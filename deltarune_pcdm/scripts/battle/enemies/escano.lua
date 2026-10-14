@@ -33,7 +33,7 @@ function enemy:init()
     self.check = "Un escaño del Congreso. Decide\nlas votaciones. Todas.\n* Lleva una maleta preparada."
     self.text = {
         "* El Escaño de Junts está negociando.",
-        "* El Escaño mira la hora del vuelo a\nBruselas.",
+        "* El Escaño mira la hora del vuelo a\n  Bruselas.",
         "* Huele a moqueta del Congreso."
     }
     self.low_health_text = "* El Escaño se tambalea. Igual que el Gobierno."

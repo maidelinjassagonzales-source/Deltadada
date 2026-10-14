@@ -35,7 +35,7 @@ function enemy:init()
     self.text = {
         "* El Abanico Arcoíris hace ¡ZAS!",
         "* Huele a purpurina.",
-        "* El Abanico pide que le digas que es\nguapo."
+        "* El Abanico pide que le digas que es\n  guapo."
     }
     self.low_health_text = "* Al Abanico se le doblan las varillas."
     self:act("Abanicarse", { mercy = 40, text = "* Te abanicas con él.\n* ¡ZAS! ¡ZAS! Qué fresquito." }, nil, nil)

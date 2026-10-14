@@ -590,6 +590,22 @@ local function fitText(text, has_face, battle)
     return PCDM.paginate(text, width, 3) or text
 end
 
+--- Lista de páginas para un texto o una lista de textos (siempre devuelve tabla).
+function PCDM.pages(text, width, max_lines)
+    local out = {}
+    for _, t in ipairs(type(text) == "table" and text or { text }) do
+        local p = type(t) == "string" and PCDM.paginate(t, width, max_lines or 3)
+        for _, page in ipairs(p or { t }) do table.insert(out, page) end
+    end
+    return out
+end
+
+--- Mete saltos de línea para que un bocadillo no se salga de la pantalla.
+function PCDM.wrap(text, width)
+    if type(text) ~= "string" then return text end
+    return table.concat(wrapLines(text, width or 22), "\n")
+end
+
 function PCDM.installTextHooks()
     Utils.hook(WorldCutscene, "text", function(orig, self, text, portrait, actor, options)
         local has_face = type(portrait) == "string"
@@ -598,6 +614,33 @@ function PCDM.installTextHooks()
     Utils.hook(BattleCutscene, "text", function(orig, self, text, portrait, actor, options)
         local has_face = type(portrait) == "string"
         return orig(self, fitText(text, has_face, true), portrait, actor, options)
+    end)
+    -- textos de ACTUAR / magia / objetos: se pueden avanzar, así que se paginan
+    Utils.hook(Battle, "battleText", function(orig, self, text, post_func)
+        if type(text) == "string" or type(text) == "table" then
+            text = PCDM.pages(text, 33, 3)
+            if #text == 1 then text = text[1] end
+        end
+        return orig(self, text, post_func)
+    end)
+    -- el texto de ambiente del turno no se avanza: si no cabe, se queda la primera caja
+    Utils.hook(Battle, "setEncounterText", function(orig, self, options, instant)
+        if type(options) == "table" and type(options.text) == "string" then
+            local p = PCDM.paginate(options.text, options.portrait and 26 or 33, 3)
+            if p then options.text = p[1] end
+        end
+        return orig(self, options, instant)
+    end)
+    -- bocadillos de los enemigos: se ajustan solos de ancho
+    Utils.hook(Battler, "spawnSpeechBubble", function(orig, self, text, options)
+        if type(text) == "table" then
+            local t = {}
+            for i, l in ipairs(text) do t[i] = PCDM.wrap(l, 22) end
+            text = t
+        else
+            text = PCDM.wrap(text, 22)
+        end
+        return orig(self, text, options)
     end)
 end
 
