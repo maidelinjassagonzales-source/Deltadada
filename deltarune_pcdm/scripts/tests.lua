@@ -238,6 +238,10 @@ function tests.recorrido(t)
         if freeRoam() and map then
             idle = idle + 0.25
             t:auto(nil)
+        elseif Game.battle then
+            -- en combate también X, para salir de menús (magias sin TP suficiente, etc.)
+            idle = 0
+            t:auto({ "z", "z", "z", "x" }, 0.09)
         else
             idle = 0
             t:auto({ "z", "left", "z" }, 0.09)
