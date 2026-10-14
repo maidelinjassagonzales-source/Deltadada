@@ -228,6 +228,8 @@ function tests.recorrido(t)
                     local times = (cs == "lw_pino.ron") and 5 or 1
                     local is_obj = ev:includes(Interactable) or ev:includes(ArmarioEvent)
                         or (ev:includes(DecoSprite) and cs)
+                    -- guardar y viajar en guagua abren menús que el caminante no sabe usar
+                    if ev:includes(Savepoint) or ev:includes(GuaguaStop) then is_obj = false end
                     if cs == "furrygrave.sticker" and ruta ~= "furrygrave" then is_obj = false end
                     if is_obj and (used[ev] or 0) < times then
                         pick, kind = ev, "interact"
