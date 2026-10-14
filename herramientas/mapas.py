@@ -510,6 +510,8 @@ scatter(m, ["d", "l"], [(4, 3), (10, 8), (16, 3), (22, 8), (28, 3), (34, 8), (40
 for i, x in enumerate((7, 13, 19, 25, 31, 37)):
     m.script(x, 2, 1, 7, "furrygrave.tramo%d" % (i + 1))
 m.script(42, 2, 1, 7, "furrygrave.fin_camino")
+m.save(3, 7)      # al empezar la ruta
+m.save(28, 6)     # a mitad del camino
 m.marker("spawn", 2, 5)
 
 m = M("dw/sg_cumbre", 16, 14, "noche", "La Cumbre", music="ruta_furrygrave")
@@ -517,6 +519,7 @@ field(m)
 m.rect(1, 1, 14, 1, "P")
 m.npc_named("gabriel", 8, 4, "gabriel", None, facing="down")
 m.script(3, 8, 10, 1, "furrygrave.gabriel")
+m.save(5, 11)     # justo antes de Gabriel (y cura al equipo)
 m.marker("spawn", 8, 11)
 
 m = M("dw/sg_vacio", 16, 12, "aroy", "...", music="")

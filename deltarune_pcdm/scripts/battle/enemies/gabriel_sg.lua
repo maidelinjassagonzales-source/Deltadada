@@ -4,7 +4,7 @@ local enemy, super = Class(PCDMEnemy, "gabriel_sg")
 function enemy:init()
     super.init(self, "gabriel_boss")
     self:setup({
-        name = "Gabriel", hp = 2200, atk = 9, def = 2, money = 0, lethal = true, power = 1.5,
+        name = "Gabriel", hp = 2200, atk = 7, def = 2, money = 0, lethal = true, power = 1.5,
         sprites = { "estrella", "nota" },
         waves = { "hacha", "anillo", "apuntado" },
         dialogue = { "Susie nunca se\nrendiría.", "Lucía, vuelve.\nPor favor.", "¡¡RUDE BUSTER!!", "No pienso caer.", "Todavía...\nno..." },

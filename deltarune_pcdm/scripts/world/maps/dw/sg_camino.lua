@@ -196,6 +196,16 @@ return {
           ["cutscene"] = "furrygrave.fin_camino",
           ["once"] = true
         }
+        },
+        {
+          id = 23, name = "savepoint", type = "savepoint", shape = "rectangle",
+          x = 120, y = 280, width = 40, height = 40, rotation = 0, visible = true,
+          properties = {}
+        },
+        {
+          id = 24, name = "savepoint", type = "savepoint", shape = "rectangle",
+          x = 1120, y = 240, width = 40, height = 40, rotation = 0, visible = true,
+          properties = {}
         }
       }
     },
@@ -205,7 +215,7 @@ return {
       properties = {},
       objects = {
         {
-          id = 23, name = "spawn", type = "", shape = "rectangle",
+          id = 25, name = "spawn", type = "", shape = "rectangle",
           x = 100, y = 236, width = 0, height = 0, rotation = 0, visible = true,
           properties = {}
         }

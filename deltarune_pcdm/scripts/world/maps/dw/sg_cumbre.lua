@@ -115,6 +115,11 @@ return {
           ["cutscene"] = "furrygrave.gabriel",
           ["once"] = true
         }
+        },
+        {
+          id = 8, name = "savepoint", type = "savepoint", shape = "rectangle",
+          x = 200, y = 440, width = 40, height = 40, rotation = 0, visible = true,
+          properties = {}
         }
       }
     },
@@ -124,7 +129,7 @@ return {
       properties = {},
       objects = {
         {
-          id = 8, name = "spawn", type = "", shape = "rectangle",
+          id = 9, name = "spawn", type = "", shape = "rectangle",
           x = 340, y = 476, width = 0, height = 0, rotation = 0, visible = true,
           properties = {}
         }

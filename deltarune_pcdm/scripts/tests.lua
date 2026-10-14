@@ -741,6 +741,46 @@ function tests.musicas(t)
     t:finish()
 end
 
+-- Ruta FURRYGRAVE: punto de guardado antes de Gabriel y combate justo
+function tests.sg_guardar(t)
+    t:wait(0.5)
+    PCDM.setFlag("ruta_furrygrave", true)
+    PCDM.setParty({ "dayron", "lucia" })
+    Game.world:loadMap("dw/sg_cumbre", "spawn", "up")
+    t:wait(1)
+    t:shot("cumbre")
+    local sp
+    for _, ev in ipairs(Game.world.map.events) do if ev:includes(Savepoint) then sp = ev end end
+    t:log("punto de guardado en la cumbre:", tostring(sp ~= nil))
+    for _, c in ipairs(Game.party) do c:setHealth(10) end
+    sp:onInteract(Game.world.player, "up")
+    t:auto({ "z" }, 0.3)
+    t:wait(4)
+    t:auto(nil)
+    t:shot("guardado")
+    t:auto({ "x" }, 0.3)
+    t:wait(2)
+    t:auto(nil)
+    local hp = {}
+    for _, c in ipairs(Game.party) do table.insert(hp, c.id .. "=" .. c:getHealth() .. "/" .. c:getStat("health")) end
+    local saves = love.filesystem.getDirectoryItems("saves/deltarune_pcdm")
+    t:log("vida tras el punto:", table.concat(hp, " "), "| partidas guardadas:", #saves)
+    Game:encounter("sg_gabriel", true)
+    t:waitBattle(5)
+    t:wait(2)
+    t:log("TP al empezar contra Gabriel:", Game:getTension(), "/", Game:getMaxTension())
+    local g = Game.battle.enemies[1]
+    g:hurt(g.health + 999, Game.battle.party[1])
+    t:wait(0.5)
+    t:log("golpe normal: Gabriel sigue con", g.health, "PV")
+    PCDM._furry_hit = true
+    g:hurt(g.health + 999, Game.battle.party[1], g.onDefeatFatal)
+    PCDM._furry_hit = false
+    t:wait(1)
+    t:log("con FURRYGRAVE: Gabriel PV", g.health, "estado", tostring(g.done_state))
+    t:finish()
+end
+
 -- Comprueba que la música de Drive se encuentra, se invierte y suena
 function tests.musica(t)
     t:wait(0.5)
