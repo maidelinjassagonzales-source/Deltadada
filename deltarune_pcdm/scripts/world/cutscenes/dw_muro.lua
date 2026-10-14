@@ -42,6 +42,15 @@ local M = {
         PCDM.setParty({ "lucia", "gabriel", "angel" })
         refreshParty()
         PCDM.setFlag("reunion", true)
+        -- Casi el final: Mamdani por fin pone en marcha las guaguas
+        Assets.playSound("phone", 0.6)
+        c:text("* El móvil de Ángel vibra.[wait:5] Es un audio de\n  Zohran Mamdani.")
+        c:text("* ¡Lo hemos conseguido![wait:5] ¡Presupuesto\n  aprobado!", "happy", "mamdani")
+        c:text("* Las Guaguas Global ya funcionan.[wait:5] Gratis.\n* Desde cualquier parada podéis volver a los\n  sitios que ya conocéis.", "smile", "mamdani")
+        c:text("* ¡¡TE QUIERO, ZOHRAN!!", "blush", AN)
+        PCDM.setFlag("guaguas_activas", true)
+        Assets.playSound("pcdm_bocina")
+        c:text("* (¡Se han desbloqueado las [color:5ad1ff]Guaguas Global[color:reset]!)")
         c:loadMap("dw/muro_1", p.x, p.y, "right")
         if PCDM.flag("hormigas_vienen") and not PCDM.isDone("hormigas") then
             c:gotoCutscene("dw_muro.hormigas")

@@ -79,7 +79,9 @@ Los pensamientos entre paréntesis dejan caer de qué bando es cada uno.
 **Mundo Oscuro (estilo DELTARUNE).** Al abrir el armario del aula caéis al Dark World: todos con orejas
 y cola. Llanuras del Armario → Bosque de Tijeras → Plató del Hormiguero → Cortijo de la Reconquista →
 El Muro → Torre de Aroy.exe. Solo se controla al **bando bueno**; el equipo va cambiando por escenas.
-Las **guaguas globales** (paradas amarillas) te llevan a los sitios que ya has visitado.
+Las **Guaguas Global** están fuera de servicio hasta casi el final: cuando el grupo se reúne en
+**El Muro**, Zohran Mamdani consigue el presupuesto y desde cualquier parada puedes volver a las zonas
+que ya has visitado.
 
 ### Equipo y magias (TP)
 

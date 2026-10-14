@@ -3,11 +3,11 @@
 local GuaguaStop, super = Class(Event)
 
 GuaguaStop.STOPS = {
-    { id = "llanuras", name = "Llanuras del Armario", map = "dw/llanuras_3", marker = "guagua" },
-    { id = "bosque", name = "Bosque de Tijeras", map = "dw/bosque_2", marker = "guagua" },
-    { id = "plato", name = "Plató del Hormiguero", map = "dw/plato_2", marker = "guagua" },
-    { id = "cortijo", name = "Cortijo de la Reconquista", map = "dw/cortijo_2", marker = "guagua" },
-    { id = "muro", name = "El Muro", map = "dw/muro_1", marker = "guagua" },
+    { id = "llanuras", short = "Llanuras", name = "Llanuras del Armario", map = "dw/llanuras_3", marker = "guagua" },
+    { id = "bosque", short = "Bosque", name = "Bosque de Tijeras", map = "dw/bosque_2", marker = "guagua" },
+    { id = "plato", short = "Plató", name = "Plató del Hormiguero", map = "dw/plato_2", marker = "guagua" },
+    { id = "cortijo", short = "Cortijo", name = "Cortijo de la Reconquista", map = "dw/cortijo_2", marker = "guagua" },
+    { id = "muro", short = "El Muro", name = "El Muro", map = "dw/muro_1", marker = "guagua" },
 }
 
 function GuaguaStop:init(x, y, shape, properties)
@@ -20,9 +20,8 @@ function GuaguaStop:init(x, y, shape, properties)
 end
 
 function GuaguaStop:onLoad()
-    if PCDM.flag("guaguas_activas") then
-        PCDM.setFlag("parada_" .. self.stop, true)
-    end
+    -- la parada queda descubierta al pasar por ella, aunque las guaguas aún no funcionen
+    PCDM.setFlag("parada_" .. self.stop, true)
 end
 
 function GuaguaStop:onInteract(player, dir)

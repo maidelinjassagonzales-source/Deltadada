@@ -443,6 +443,40 @@ function tests.objeto_lw(t)
     t:finish()
 end
 
+-- Guaguas: bloqueadas al principio y con menú de varias páginas al final
+function tests.guagua(t)
+    t:wait(0.5)
+    PCDM.setParty({ "lucia", "gabriel", "angel" })
+    Game.world:loadMap("dw/llanuras_3", "spawn", "down")
+    t:wait(0.8)
+    Game.world:startCutscene("npcs.guagua", "llanuras")
+    t:wait(1.5)
+    t:shot("bloqueada")
+    t:auto({ "z" }, 0.25)
+    t:waitNoCutscene(15)
+    t:auto(nil)
+    t:log("activas:", tostring(PCDM.flag("guaguas_activas")))
+    for _, id in ipairs({ "llanuras", "bosque", "plato", "cortijo", "muro" }) do PCDM.setFlag("parada_" .. id, true) end
+    PCDM.setFlag("guaguas_activas", true)
+    PCDM.setFlag("reunion", true)
+    Game.world:loadMap("dw/muro_1", "spawn", "down")
+    t:wait(0.8)
+    Game.world:startCutscene("npcs.guagua", "muro")
+    t:press("z") t:wait(1.2) t:press("z") t:wait(1.2)
+    t:shot("menu1")
+    -- "Más..." es la tercera opción (arriba): flecha arriba y Z
+    t:press("up") t:wait(0.3) t:press("z") t:wait(1)
+    t:shot("menu2")
+    -- elegir la primera de la segunda página
+    t:press("left") t:wait(0.3) t:press("z") t:wait(2)
+    t:auto({ "z" }, 0.25)
+    t:waitNoCutscene(15)
+    t:auto(nil)
+    t:log("llegada:", Game.world.map.id)
+    t:shot("llegada")
+    t:finish()
+end
+
 -- Comprueba que la música de Drive se encuentra, se invierte y suena
 function tests.musica(t)
     t:wait(0.5)

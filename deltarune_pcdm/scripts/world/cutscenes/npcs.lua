@@ -1,11 +1,12 @@
 -- NPCs y objetos genéricos: guaguas, móvil...
 return {
     guagua = function(c, stop)
+        PCDM.setFlag("parada_" .. stop, true)
         if not PCDM.flag("guaguas_activas") then
-            c:text("* Una guagua azul de la Global.[wait:5]\n* Está aparcada.[wait:5] No hay conductor.")
+            c:text("* Una guagua azul de la Global.[wait:5]\n* El cartel pone: \"FUERA DE SERVICIO\".")
+            c:text("* (Las Guaguas Global todavía no funcionan.\n  Ya llegará el día.)")
             return
         end
-        PCDM.setFlag("parada_" .. stop, true)
         Assets.playSound("pcdm_bocina")
         c:text("* ¡Guagua Global![wait:5] Gratis para todo el mundo.\n* ¿A dónde vamos, mi niño?", "happy", "paco")
         local dest = {}
@@ -18,12 +19,28 @@ return {
             c:text("* Todavía no conoces otras paradas.[wait:5]\n* ¡Explora un poco, chacho!", "neutral", "paco")
             return
         end
-        local names = {}
-        for i = 1, math.min(3, #dest) do table.insert(names, dest[i].name) end
-        table.insert(names, "Quedarse")
-        local ch = c:choicer(names)
-        if ch > math.min(3, #dest) then return end
-        local d = dest[ch]
+        -- el menú de elegir tiene 4 huecos: si hay más destinos, se pasa de página
+        local d, page = nil, 1
+        while not d do
+            local first = (page - 1) * 2 + 1
+            local names, map = {}, {}
+            local fits_all = #dest - first + 1 <= 3
+            local last = fits_all and #dest or first + 1
+            for i = first, last do
+                table.insert(names, dest[i].short or dest[i].name)
+                table.insert(map, dest[i])
+            end
+            if not fits_all then table.insert(names, "Más...") end
+            table.insert(names, "Quedarse")
+            local ch = c:choicer(names)
+            if ch <= #map then
+                d = map[ch]
+            elseif names[ch] == "Más..." then
+                page = page + 1
+            else
+                return
+            end
+        end
         c:wait(c:fadeOut(0.4))
         Assets.playSound("pcdm_bocina")
         c:loadMap(d.map, d.marker, "down")

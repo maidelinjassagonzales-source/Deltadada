@@ -65,22 +65,22 @@ return {
             "* Los enemigos importantes son más duros.\n* No esperéis tumbarlos en un turno.",
             "* Si un enemigo tiene el nombre en\n  [color:yellow]amarillo[color:reset], podéis PERDONARLO.",
             "* Los del bando malo...[wait:5] si los derrotáis\n  a golpes, no se escapan.[wait:5] Mueren.[wait:5]\n* Y eso os hará más fuertes.",
-            "* Dicen que en este mundo hay guaguas\n  GRATIS.[wait:5] Algo de un tal Mamdani.",
+            "* Dicen que algún día habrá guaguas GRATIS\n  en este mundo.[wait:5] Algo de un tal Mamdani.",
             "* En un rincón de estas llanuras brilla\n  algo dorado.[wait:5] Yo que vosotros no lo\n  tocaba.",
         }
         c:text(tips[love.math.random(1, #tips)], "neutral", "percha")
     end,
     mamdani = function(c)
-        if not PCDM.flag("guaguas_activas") then
+        if not PCDM.flag("mamdani_visto") then
             c:text("* ¡Hola![wait:5] Soy Zohran Mamdani.[wait:5] Alcalde de\n  Nueva York y, al parecer, del transporte\n  público del Dark World.", "smile", "mamdani")
-            c:text("* Aquí las Guaguas Global son GRATIS.\n* Para todo el mundo.[wait:5] Furros incluidos.", "happy", "mamdani")
+            c:text("* Estoy montando las Guaguas Global.\n* GRATIS.[wait:5] Para todo el mundo.[wait:5] Furros\n  incluidos.", "happy", "mamdani")
             c:text("* ¿¡GRATIS!?[wait:5] ¡Paco el guagüero estaría\n  orgulloso!", "happy", L)
             c:text("* ¡Becas, ayudas y guaguas gratis![wait:5]\n* ¡Te quiero, Zohran!", "blush", AN)
-            c:text("* Cuando hayáis pasado por otras paradas,\n  podréis volver a ellas en un momento.\n* Solo tenéis que subiros.", "grin", "mamdani")
-            PCDM.setFlag("guaguas_activas", true)
-            PCDM.setFlag("parada_llanuras", true)
-            Assets.playSound("pcdm_bocina")
-            c:text("* (¡Se han desbloqueado las [color:5ad1ff]Guaguas Global[color:reset]!)")
+            c:text("* Pero todavía no funcionan.[wait:5] Los del bando\n  malo me tienen el presupuesto bloqueado.", "sad", "mamdani")
+            c:text("* Cuando lleguéis al final del Dark World,\n  os aviso.[wait:5] Ya veréis.", "grin", "mamdani")
+            PCDM.setFlag("mamdani_visto", true)
+        elseif not PCDM.flag("guaguas_activas") then
+            c:text("* Seguimos sin presupuesto.[wait:5] Paciencia.\n* El transporte público es un derecho.", "neutral", "mamdani")
         else
             c:text("* El transporte público es un derecho.\n* Y lo de las colas furras, también.", "smile", "mamdani")
         end
