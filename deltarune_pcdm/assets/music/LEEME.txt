@@ -15,7 +15,10 @@ Secciones: intro, aroy, casa_pablo, casa_lucia, calle, instituto, aula, patio,
 casa_andres, fiestas_pino, combate_light, caida, llanuras, bosque, plato,
 cortijo, muro, torre_aroy, combate, jefe, jefe_motos, jefe_gabriel,
 jefe_dayron, jefe_aroy, jefe_andres, papa_francisco, tienda, final_neutral,
-final_verdadero, final_furrygrave, ruta_furrygrave.
+final_verdadero, final_furrygrave, ruta_furrygrave, jefe_vito, jefe_angelpedro,
+jefe_abascal, jefe_pablo, jefe_trump, jefe_netanyahu.
 
-Lo más fácil: python3 herramientas/instalar_musica.py --help
-Si una carpeta está vacía, suena la música que trae Kristal.
+Las canciones pcdm_<sección>.ogg son música original compuesta para el mod
+(herramientas/musica_chip.py). Si metes otra canción en una carpeta, borra la
+pcdm_*.ogg de esa carpeta y sonará la tuya.
+Para copiar música de tus juegos: python3 herramientas/instalar_musica.py --help

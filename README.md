@@ -46,8 +46,10 @@ Ya vienen incluidas las canciones de la carpeta de Drive `deltarunekdadas`:
 | `assets/music/jefe_motos/pablo_motos_revert.ogg` | La pelea contra Pablo Motos: ya viene **invertida** y el mod la pone **slowed** al reproducirla |
 | `assets/sounds/Dayron.ogg` | De fondo en la pelea Gabriel vs Dayron, con eco, reverb y distorsión que van cambiando |
 
-El resto de partes del juego busca su canción en `deltarune_pcdm/assets/music/<sección>/`, y si no hay
-nada usa la que trae Kristal. Para meter la música de **DELTARUNE y UNDERTALE** desde tus juegos
+El resto del juego lleva **música original compuesta para el mod** (estilo chiptune): un tema distinto
+para cada zona y para cada jefe (36 en total), generado con `herramientas/musica_chip.py`.
+Cada parte del juego busca su canción en `deltarune_pcdm/assets/music/<sección>/`: si pones ahí otra
+canción, se usa esa. Para meter la música de **DELTARUNE y UNDERTALE** desde tus juegos
 instalados:
 
 ```
@@ -120,6 +122,7 @@ que ya has visitado.
 | `generar_todo.py` | Dibuja todos los sprites, retratos, enemigos, balas, tilesets, voces y efectos |
 | `mapas.py` | Genera los 24 mapas (formato Tiled-Lua) desde un mini-lenguaje en Python |
 | `fuente_plain.py` | Añade tildes, ñ y ¿¡ a la fuente de los bocadillos de diálogo |
+| `musica_chip.py` | Compone la música original de cada zona y jefe (`--forzar` para regenerarla) |
 | `instalar_musica.py` | Coloca la música en `assets/music/<sección>/` |
 | `verificar.py` | Comprueba que existen todas las referencias (cinemáticas, mapas, sprites, objetos…) |
 | `probar.sh` | Lanza el mod sin pantalla con pruebas automáticas y saca capturas |

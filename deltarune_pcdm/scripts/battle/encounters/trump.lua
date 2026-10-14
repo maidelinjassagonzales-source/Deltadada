@@ -3,7 +3,7 @@ local encounter, super = Class(PCDMEncounter, "trump")
 function encounter:init()
     super.init(self)
     self.text = "* ¡Trump bloquea el paso con su muro!\n* Tremendo."
-    self:setMusic("jefe")
+    self:setMusic("jefe_trump")
     self:addEnemy("trump")
 end
 

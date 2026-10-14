@@ -714,6 +714,33 @@ function tests.escena_jefe(t)
     t:finish()
 end
 
+-- Cada sección encuentra su canción y suena
+function tests.musicas(t)
+    t:wait(0.5)
+    local secciones = { "intro", "aroy", "casa_pablo", "casa_lucia", "calle", "instituto", "aula", "patio", "casa_andres",
+        "fiestas_pino", "combate_light", "caida", "llanuras", "bosque", "plato", "cortijo", "muro", "torre_aroy", "combate",
+        "jefe", "jefe_vito", "jefe_angelpedro", "jefe_abascal", "jefe_pablo", "jefe_trump", "jefe_netanyahu", "jefe_motos",
+        "jefe_gabriel", "jefe_aroy", "jefe_andres", "papa_francisco", "tienda", "final_neutral", "final_verdadero",
+        "final_furrygrave", "ruta_furrygrave" }
+    local usadas, mal = {}, 0
+    for _, sec in ipairs(secciones) do
+        local id = PCDM.findMusic(sec)
+        local ok = false
+        if id then
+            Game.world.music:play(id)
+            t:wait(0.15)
+            ok = Game.world.music:isPlaying()
+        end
+        if not ok then mal = mal + 1 end
+        usadas[id or "?"] = (usadas[id or "?"] or 0) + 1
+        t:log(string.format("%-17s -> %-32s %s", sec, tostring(id), ok and "suena" or "NO SUENA"))
+    end
+    local distintas = 0
+    for _ in pairs(usadas) do distintas = distintas + 1 end
+    t:log("secciones:", #secciones, "canciones distintas:", distintas, "sin sonar:", mal)
+    t:finish()
+end
+
 -- Comprueba que la música de Drive se encuentra, se invierte y suena
 function tests.musica(t)
     t:wait(0.5)
