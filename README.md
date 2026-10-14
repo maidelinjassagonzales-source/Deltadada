@@ -23,20 +23,21 @@ píxel a píxel con los scripts de `herramientas/`.
 
 ### Música
 
-El mod no trae música con copyright. Cada parte del juego busca su canción en
-`deltarune_pcdm/assets/music/<sección>/`, y si no hay nada usa la que trae Kristal.
+Ya vienen incluidas las canciones de la carpeta de Drive `deltarunekdadas`:
 
-- **Canciones de la carpeta de Drive `deltarunekdadas`** (descárgalas primero):
-  - *"musica de lucha contra pablo motos…"* → `assets/music/jefe_motos/` — el mod la **invierte y
-    la ralentiza (slowed)** solo, en tiempo real. Si ya la tienes invertida, ponle "revert" en el nombre.
-  - *"musica que suena cuando aroy habla"* → `assets/music/aroy/`
-  - *"musica que suena cuando luchas contra gabriel"* → `assets/music/jefe_gabriel/`
-  - **`Dayron.ogg`** → `assets/sounds/Dayron.ogg` — suena de fondo en la pelea Gabriel vs Dayron con
-    eco, reverb y distorsión que van cambiando.
-- **Música de DELTARUNE y UNDERTALE** desde tus juegos instalados, automáticamente:
+| Canción | Dónde suena |
+|---|---|
+| `assets/music/aroy/aroy_habla.mp3` | Cada vez que habla Aroy.exe |
+| `assets/music/jefe_gabriel/gabriel.mp3` | La pelea contra Gabriel |
+| `assets/music/jefe_motos/pablo_motos_revert.ogg` | La pelea contra Pablo Motos: ya viene **invertida** y el mod la pone **slowed** al reproducirla |
+| `assets/sounds/Dayron.ogg` | De fondo en la pelea Gabriel vs Dayron, con eco, reverb y distorsión que van cambiando |
+
+El resto de partes del juego busca su canción en `deltarune_pcdm/assets/music/<sección>/`, y si no hay
+nada usa la que trae Kristal. Para meter la música de **DELTARUNE y UNDERTALE** desde tus juegos
+instalados:
 
 ```
-python3 herramientas/instalar_musica.py --deltarune "RUTA/A/DELTARUNE" --undertale "RUTA/A/Undertale" --drive "RUTA/A/deltarunekdadas"
+python3 herramientas/instalar_musica.py --deltarune "RUTA/A/DELTARUNE" --undertale "RUTA/A/Undertale"
 ```
 
 La lista de secciones está en `deltarune_pcdm/assets/music/LEEME.txt`.

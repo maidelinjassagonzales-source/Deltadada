@@ -282,6 +282,33 @@ function tests.recorrido(t)
     t:log("ruta:", PCDM.route(), "final:", tostring(PCDM.flag("final_visto")))
 end
 
+-- Comprueba que la música de Drive se encuentra, se invierte y suena
+function tests.musica(t)
+    t:wait(0.5)
+    for _, sec in ipairs({ "aroy", "jefe_gabriel", "jefe_motos", "llanuras" }) do
+        t:log("seccion", sec, "->", tostring(PCDM.findMusic(sec)))
+    end
+    local src = PCDM.makeReversedSlowedSource("jefe_motos")
+    t:log("motos invertida:", src and ("ok " .. string.format("%.1f", src:getDuration()) .. "s") or "FALLO")
+    PCDM.playMusic("aroy")
+    t:wait(0.5)
+    local m = Game.world.music
+    t:log("aroy suena:", tostring(m.current), m.source and tostring(m.source:isPlaying()) or "sin source")
+    PCDM.playReversedSlowed(m, "jefe_motos")
+    t:wait(0.5)
+    t:log("motos suena:", tostring(m.current), m.source and (tostring(m.source:isPlaying()) .. " pitch " .. m.source:getPitch()) or "sin source")
+    local d = DayronDistorter()
+    Game.stage:addChild(d)
+    t:wait(1)
+    t:log("Dayron.ogg:", d.main and ("ok, suena " .. tostring(d.main:isPlaying())) or "FALLO", "fuentes:", #d.sources)
+    d:remove()
+    Game:encounter("sg_gabriel", true)
+    t:waitBattle(5)
+    t:wait(1)
+    t:log("musica combate gabriel:", tostring(Game.battle and Game.battle.music and Game.battle.music.current))
+    t:finish()
+end
+
 -- Un solo combate para ver cómo queda: PCDM_COMBATE=<encuentro>
 function tests.jefe(t)
     t:wait(0.5)
