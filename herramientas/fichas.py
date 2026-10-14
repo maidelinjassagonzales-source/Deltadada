@@ -6,7 +6,7 @@ En el Dark World ("dark") todos ganan orejitas y cola de animal.
 FICHAS = {
     # ------------------------------------------------------------------ BANDO BUENO
     "lucia": dict(
-        name="Lucía", skin="claro", hair="4a2f2a", hair_style="messy", eye_color="3a2340",
+        name="Lucía", skin="claro", hair="4a2f2a", hair_style="long", eye_color="3a2340",
         outfit=dict(top="b48cd8", hood=True, bottom="3b3b4f", legs="3b3b4f", shoes="f0f0f0"),
         lw_tail=True, tail="fox", tail_color="f0954a", tail_tip="ffffff",
         dark=dict(ears="fox", ear_color="f0954a", tail="fox", tail_color="f0954a", tail_tip="ffffff"),
@@ -15,7 +15,7 @@ FICHAS = {
         exprs=["neutral", "happy", "smile", "sad", "surprised", "angry", "blush", "crying", "scared", "closed"],
     ),
     "lucia_sg": dict(
-        name="Lucía", skin="claro", hair="4a2f2a", hair_style="messy", eye_color="3a2340", hat="cap", hat_color="3a3a3a",
+        name="Lucía", skin="claro", hair="4a2f2a", hair_style="long", eye_color="3a2340", hat="cap", hat_color="3a3a3a",
         outfit=dict(top="6a6a72", bottom="3b3b4f", legs="3b3b4f", shoes="5a5a5a"),
         dark=dict(),
         outfit_dark=dict(top="5a5a62", bottom="2a2a33", legs="2a2a33", shoes="4a4a4a"),

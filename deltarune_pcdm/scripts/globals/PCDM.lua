@@ -514,15 +514,30 @@ local function tokenize(line)
     return tokens
 end
 
-local function wrapLines(text, width)
+--- ¿Empieza el texto (sin contar comandos [..]) por "* "?
+local function startsStar(s)
+    -- el motor solo mira las letras que se escriben: los comandos [..] no cuentan
+    local v = s:gsub("%[[^%]]*%]", ""):gsub("^%s+", "")
+    return v:sub(1, 2) == "* "
+end
+
+-- Parte un texto en líneas imitando al motor de Kristal:
+--  * si el texto empieza por "* ", TODAS las líneas siguientes que no empiecen por "*"
+--    salen sangradas 2 caracteres automáticamente (así que solo caben width - 2);
+--  * los espacios de sangría escritos a mano se quitan (si no, se sangra dos veces).
+-- Devuelve una lista de { text, cont } (cont = línea que continúa un párrafo "* ").
+local function wrapModel(text, width)
     local lines = {}
+    local in_star = false
     for hard in (text .. "\n"):gmatch("(.-)\n") do
-        local tokens = tokenize(hard)
+        local stripped = hard:gsub("^%s+", "")
+        local star = startsStar(stripped)
+        local cont = (not star) and in_star
+        if star then in_star = true end
         local cur, cur_len = "", 0
-        local first = true
-        local indent = hard:sub(1, 2) == "* " and 2 or 0
+        local limit = cont and width - 2 or width
         local pending_space = false
-        for _, tk in ipairs(tokens) do
+        for _, tk in ipairs(tokenize(stripped)) do
             if tk.t == "c" then
                 cur = cur .. tk.v
             elseif tk.t == "s" then
@@ -530,10 +545,12 @@ local function wrapLines(text, width)
             else
                 local wl = ulen(tk.v)
                 local add = (pending_space and cur_len > 0) and 1 or 0
-                if cur_len > 0 and cur_len + add + wl > width then
-                    table.insert(lines, cur)
-                    first = false
-                    cur, cur_len = string.rep(" ", indent) .. tk.v, indent + wl
+                if cur_len > 0 and cur_len + add + wl > limit then
+                    table.insert(lines, { text = cur, cont = cont })
+                    -- lo que sigue en esta línea ya es continuación
+                    cont = in_star
+                    limit = cont and width - 2 or width
+                    cur, cur_len = tk.v, wl
                 else
                     cur = cur .. (add == 1 and " " or "") .. tk.v
                     cur_len = cur_len + add + wl
@@ -541,39 +558,47 @@ local function wrapLines(text, width)
                 pending_space = false
             end
         end
-        table.insert(lines, cur)
+        table.insert(lines, { text = cur, cont = cont })
     end
     return lines
 end
 
---- Devuelve una lista de páginas (cada una de <= max_lines líneas), o nil si ya cabe.
+-- Junta líneas en una caja. Si la caja empieza por "* ", el motor sangra solo;
+-- si empieza a mitad de párrafo, la sangría se pone a mano.
+local function renderPage(lines, from, to, style)
+    local auto = startsStar(lines[from].text)
+    local out = {}
+    for k = from, to do
+        local l = lines[k]
+        table.insert(out, (l.cont and not auto) and ("  " .. l.text) or l.text)
+    end
+    return style .. table.concat(out, "\n")
+end
+
+--- Reparte un texto en cajas de max_lines líneas. Siempre devuelve una lista de páginas.
 function PCDM.paginate(text, width, max_lines)
     width = width or 26
     max_lines = max_lines or 3
-    if #wrapLines(text, width) <= max_lines then return nil end
-    -- No cabe: los saltos manuales dentro de un párrafo pasan a ser espacios
-    local paras = {}
-    for seg in (text .. "\n"):gmatch("(.-)\n") do
-        local stripped = seg:gsub("^%s+", "")
-        if #paras == 0 or stripped:sub(1, 2) == "* " then
-            table.insert(paras, (#paras == 0) and seg or stripped)
-        else
-            paras[#paras] = paras[#paras] .. " " .. stripped
+    local lines = wrapModel(text, width)
+    if #lines > max_lines then
+        -- No cabe: los saltos manuales dentro de un párrafo pasan a ser espacios
+        local paras = {}
+        for seg in (text .. "\n"):gmatch("(.-)\n") do
+            local stripped = seg:gsub("^%s+", "")
+            if #paras == 0 or startsStar(stripped) then
+                table.insert(paras, stripped)
+            else
+                paras[#paras] = paras[#paras] .. " " .. stripped
+            end
         end
+        lines = wrapModel(table.concat(paras, "\n"), width)
     end
-    local lines = wrapLines(table.concat(paras, "\n"), width)
     local pages = {}
     local style = ""
     for i = 1, #lines, max_lines do
-        local chunk = {}
-        for k = i, math.min(#lines, i + max_lines - 1) do
-            table.insert(chunk, lines[k])
-        end
-        local page = table.concat(chunk, "\n")
-        if i > 1 then
-            page = style .. page:gsub("^%s+", "  ")
-        end
+        local page = renderPage(lines, i, math.min(#lines, i + max_lines - 1), i > 1 and style or "")
         table.insert(pages, page)
+        -- el color/temblor activo pasa a la caja siguiente
         local last_color, last_shake
         for c in page:gmatch("%[color:[^%]]*%]") do last_color = c end
         for c in page:gmatch("%[shake:[^%]]*%]") do last_shake = c end
@@ -583,12 +608,17 @@ function PCDM.paginate(text, width, max_lines)
     return pages
 end
 
+-- Caracteres que caben por línea (fuente main_mono: 16 px por letra)
+--   diálogo: 427 px con retrato (26) / 543 px sin retrato (33)
+--   combate: 494 px con retrato (30) / 610 px sin retrato (38); se deja algo de margen
 local function fitText(text, has_face, battle)
     if type(text) ~= "string" then return text end
-    local width = has_face and 25 or 32
-    if battle then width = has_face and 26 or 33 end
-    return PCDM.paginate(text, width, 3) or text
+    local width = has_face and 26 or 33
+    if battle then width = has_face and 29 or 36 end
+    local pages = PCDM.paginate(text, width, 3)
+    return #pages == 1 and pages[1] or pages
 end
+PCDM.fitText = fitText
 
 --- Lista de páginas para un texto o una lista de textos (siempre devuelve tabla).
 function PCDM.pages(text, width, max_lines)
@@ -603,7 +633,9 @@ end
 --- Mete saltos de línea para que un bocadillo no se salga de la pantalla.
 function PCDM.wrap(text, width)
     if type(text) ~= "string" then return text end
-    return table.concat(wrapLines(text, width or 22), "\n")
+    local out = {}
+    for _, l in ipairs(wrapModel(text, width or 22)) do table.insert(out, l.text) end
+    return table.concat(out, "\n")
 end
 
 function PCDM.installTextHooks()
@@ -618,7 +650,7 @@ function PCDM.installTextHooks()
     -- textos de ACTUAR / magia / objetos: se pueden avanzar, así que se paginan
     Utils.hook(Battle, "battleText", function(orig, self, text, post_func)
         if type(text) == "string" or type(text) == "table" then
-            text = PCDM.pages(text, 33, 3)
+            text = PCDM.pages(text, 36, 3)
             if #text == 1 then text = text[1] end
         end
         return orig(self, text, post_func)
@@ -626,8 +658,7 @@ function PCDM.installTextHooks()
     -- el texto de ambiente del turno no se avanza: si no cabe, se queda la primera caja
     Utils.hook(Battle, "setEncounterText", function(orig, self, options, instant)
         if type(options) == "table" and type(options.text) == "string" then
-            local p = PCDM.paginate(options.text, options.portrait and 26 or 33, 3)
-            if p then options.text = p[1] end
+            options.text = PCDM.paginate(options.text, options.portrait and 29 or 36, 3)[1]
         end
         return orig(self, options, instant)
     end)

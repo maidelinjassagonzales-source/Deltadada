@@ -1,6 +1,31 @@
 -- Pruebas automáticas (solo con PCDM_TEST=<nombre>). No afectan al juego.
 local tests = {}
 
+-- Detector de textos que se salen de su caja: mide cada página con el mismo ancho y
+-- fuente que la caja real y avisa si ocupa más de 3 líneas.
+function tests.detector()
+    local seen = {}
+    local function check(where, width, pages, max_lines)
+        for _, p in ipairs(type(pages) == "table" and pages or { pages }) do
+            if type(p) == "string" and not seen[p] then
+                seen[p] = true
+                local ok, h = pcall(function()
+                    local t = DialogueText(p, 0, 0, width, 2000, { font = "main_mono" })
+                    return t:getTextHeight()
+                end)
+                local lines = ok and math.floor((h - 32) / 36 + 1.5) or -1
+                if lines > (max_lines or 3) then
+                    print(string.format("[PCDMTEST] DESBORDE %s (%d líneas, ancho %d): %s", where, lines, width, (p:gsub("\n", " / "))))
+                end
+            end
+        end
+    end
+    Utils.hook(Textbox, "setText", function(orig, self, text, callback)
+        check(self.battle_box and "batalla" or "caja", self.text.width, text, 3)
+        return orig(self, text, callback)
+    end)
+end
+
 function tests.humo(t)
     t:wait(1)
     PCDM.setParty({ "lucia", "yerover", "angel" })
@@ -282,6 +307,135 @@ function tests.recorrido(t)
     end
     t:log("resumen:", table.concat(killed, " "))
     t:log("ruta:", PCDM.route(), "final:", tostring(PCDM.flag("final_visto")))
+end
+
+-- Pasa TODOS los textos de los scripts por el paginador y los mide con la fuente real
+local function stringsOf(src)
+    local out, i, n = {}, 1, #src
+    while i <= n do
+        local c = src:sub(i, i)
+        if c == "-" and src:sub(i, i + 1) == "--" then
+            local j = src:find("\n", i, true) or n
+            i = j + 1
+        elseif c == '"' then
+            local j, buf = i + 1, {}
+            while j <= n do
+                local d = src:sub(j, j)
+                if d == "\\" then
+                    local e = src:sub(j + 1, j + 1)
+                    table.insert(buf, e == "n" and "\n" or e)
+                    j = j + 2
+                elseif d == '"' then
+                    break
+                else
+                    table.insert(buf, d)
+                    j = j + 1
+                end
+            end
+            table.insert(out, table.concat(buf))
+            i = j + 1
+        else
+            i = i + 1
+        end
+    end
+    return out
+end
+
+function tests.textos(t)
+    t:wait(0.5)
+    local W = { world = { [true] = 427, [false] = 543 }, battle = { [true] = 494, [false] = 610 } }
+    local total, bad = 0, 0
+    for _, probe in ipairs({ "* a", "* a\n* b", "* a\n* b\n* c", "* a\n* b\n* c\n* d", "* a[wait:5]\n* b[wait:5]\n* c" }) do
+        local tx = DialogueText(probe, 0, 0, 543, 2000, { font = "main_mono" })
+        t:log("calibra", (probe:gsub("\n", "/")), tx:getTextHeight())
+    end
+    local function files(dir, list)
+        for _, f in ipairs(love.filesystem.getDirectoryItems(dir)) do
+            local p = dir .. "/" .. f
+            if love.filesystem.getInfo(p, "directory") then files(p, list)
+            elseif f:sub(-4) == ".lua" then table.insert(list, p) end
+        end
+        return list
+    end
+    local base = Mod.info.path .. "/scripts/"
+    for _, sub in ipairs({ "world/cutscenes", "battle", "objects", "globals", "data" }) do
+        local battle = sub ~= "world/cutscenes"
+        for _, path in ipairs(files(base .. sub, {})) do
+            for _, s in ipairs(stringsOf(love.filesystem.read(path))) do
+                local plain = s:gsub("%[[^%]]*%]", "")
+                if #plain > 20 and (plain:find("^%* ") or plain:find("^%(") or plain:find("\n")) then
+                    total = total + 1
+                    for _, face in ipairs({ true, false }) do
+                        local kind = battle and "battle" or "world"
+                        local pages = PCDM.fitText(s, face, battle)
+                        if type(pages) == "string" then pages = { pages } end
+                        for _, page in ipairs(pages) do
+                            local tx = DialogueText(page, 0, 0, W[kind][face], 2000, { font = "main_mono" })
+                            local lines = math.floor((tx:getTextHeight() - 32) / 36 + 1.5)
+                            if lines > 3 then
+                                bad = bad + 1
+                                t:log(string.format("DESBORDE %s %s cara=%s (%d líneas): %s", path:gsub(".*/scripts/", ""), kind, tostring(face), lines, (page:gsub("\n", " / "))))
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+    t:log("textos revisados:", total, "desbordes:", bad)
+    t:finish()
+end
+
+function tests.mide(t)
+    t:wait(0.3)
+    local probes = {
+        "* Dayron me ha dicho que",
+        "  aquí hay muchas sillas.[wait:5]",
+        "  aquí hay muchas sillas.",
+        "* Dayron me ha dicho que\n  aquí hay muchas sillas.[wait:5]\n  Y que hay que",
+        "* 123456789012345678901234",
+        "* 1234567890123456789012345",
+        "* 12345678901234567890123456",
+        "aaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    }
+    for _, p in ipairs(probes) do
+        local tx = DialogueText(p, 0, 0, 427, 2000, { font = "main_mono" })
+        t:log("mide", tx:getTextHeight(), tx:getTextWidth(), (p:gsub("\n", "/")))
+    end
+    t:finish()
+end
+
+-- Usar un objeto desde el menú del Light World (antes crasheaba)
+function tests.objeto_lw(t)
+    t:wait(0.5)
+    Game.world:loadMap("lw/casa_lucia", "spawn", "down")
+    t:wait(1)
+    local chara = Game.party[1]
+    chara:setHealth(5)
+    t:log("vida antes:", chara:getHealth(), "objetos:", #Game.inventory:getStorage("items"))
+    -- igual que el jugador: C (menú) -> OBJETO -> primer objeto -> USAR
+    for _, k in ipairs({ "c", "z", "z", "z" }) do
+        t:press(k)
+        t:wait(0.6)
+    end
+    t:shot("usado")
+    t:auto({ "z" }, 0.2)
+    t:wait(3)
+    t:auto(nil)
+    t:log("vida despues:", chara:getHealth())
+    -- y la llamada directa que hace el motor (lo que crasheaba)
+    local it = Game.inventory:getItem(Game.inventory:getStorage("items"), 1)
+    if it then
+        it:onWorldUse(Game.party)
+        t:wait(0.5)
+        t:shot("directo")
+        t:auto({ "z" }, 0.2)
+        t:wait(2)
+        t:auto(nil)
+    end
+    t:log("vida final:", chara:getHealth())
+    t:finish()
 end
 
 -- Comprueba que la música de Drive se encuentra, se invierte y suena

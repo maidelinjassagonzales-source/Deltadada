@@ -4,7 +4,7 @@ local spell, super = Class(PCDMSpell, "capitan_israel")
 function spell:init()
     super.init(self)
     self.name = "CAPITÁN ISRAEL"
-    self.effect = "Daño\ntodos+cura"
+    self.effect = "Daña y\ncura"
     self.description = "¡Por las calles de Tel Aviv!\nDaña a todos y cura al equipo."
     self.cost = 70
     self.target = "enemies"

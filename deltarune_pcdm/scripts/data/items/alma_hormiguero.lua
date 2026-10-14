@@ -5,7 +5,7 @@ function item:init()
     super.init(self)
     self.name = "Alma del Hormiguero"
     self.type = "item"
-    self.effect = "Cura\nequipo 70"
+    self.effect = "Equipo\n+70HP"
     self.shop = ""
     self.description = "Huele a plató y a puntos de share.\nCura 70HP a todo el equipo."
     self.heal_amount = 70

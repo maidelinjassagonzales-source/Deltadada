@@ -18,6 +18,20 @@ function Mod:init()
     -- Los textos largos se reparten solos en varias cajas
     PCDM.installTextHooks()
 
+    -- Objetos del Light World: el menú de Kristal le pasa TODO el equipo a la curación
+    -- (y crasheaba con "attempt to call method 'heal'"). Se cura quien lleva el menú,
+    -- y el mensaje sale en castellano.
+    Utils.hook(World, "heal", function(orig, world, target, amount, text)
+        if type(target) == "table" and not isClass(target) then target = target[1] end
+        if type(target) == "string" then target = Game:getPartyMember(target) end
+        if not target then return end
+        if not Game:isLight() then return orig(world, target, amount, text) end
+        local maxed = target:heal(amount)
+        local message = maxed and "* Tus PV están al máximo." or ("* Recuperas " .. amount .. " PV.")
+        if text then message = text .. "\n" .. message end
+        world:showText(message)
+    end)
+
     -- Si alguien habla en mitad de un ataque, el combate se pausa para poder leerlo
     Utils.hook(Battle, "updateWaves", function(orig, battle)
         if PCDM.battle_paused then return end
@@ -74,6 +88,7 @@ function Mod:postInit(new_file)
     if os.getenv("PCDM_TEST") then
         -- en las pruebas automáticas los combates del Light World acaban de un golpe
         PCDM.test_easy = os.getenv("PCDM_TEST_FACIL") ~= "0"
+        modRequire("scripts.tests").detector()
         Game.stage:addChild(PCDMTestRunner(os.getenv("PCDM_TEST")))
         return
     end

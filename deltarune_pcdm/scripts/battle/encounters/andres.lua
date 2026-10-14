@@ -43,7 +43,7 @@ function encounter:getDialogueCutscene()
             c:text("* Hijos míos.[wait:5] ¿Quién soy yo para juzgar?\n* ...[wait:10]Bueno.[wait:5] A este sí.", "neutral", "papa")
             c:text("* Esas almas no son suyas.[wait:5] Mandémoslas\n  a donde tienen que estar.", "angry", "papa")
             c:text("* (¡Ahora podéis ACTUAR: [color:yellow]Mandar al infierno[color:reset]!)")
-            boss:act("Mandar al infierno", { func = function(e) return e:sendSoul() end }, "Con ayuda\ndel Papa")
+            boss:act("Mandar al infierno", { func = function(e) return e:sendSoul() end }, "Con el\nPapa")
             for _, b in ipairs(Game.battle.party) do b:heal(60) end
             Game:giveTension(40)
             c:battlerText(boss, "¿¡EL PAPA!?\n¡¡ESTO NO\nES JUSTO!!")

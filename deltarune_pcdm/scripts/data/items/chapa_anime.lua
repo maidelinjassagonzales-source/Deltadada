@@ -8,7 +8,7 @@ function item:init()
     self.icon = "ui/menu/icon/armor"
     self.effect = ""
     self.shop = ""
-    self.description = "Una chapa de un anime que nadie conoce.\nDa fuerza interior."
+    self.description = "Chapa de un anime que nadie conoce.\nDa fuerza interior."
     self.price = 40
     self.can_sell = true
     self.target = "none"

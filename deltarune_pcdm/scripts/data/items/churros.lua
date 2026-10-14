@@ -7,7 +7,7 @@ function item:init()
     self.type = "item"
     self.effect = "Cura\n45HP"
     self.shop = "Churros\nde feria\n+45HP"
-    self.description = "Churros de las Fiestas del Pino.\nSiguen calientes. Misteriosamente. +45HP"
+    self.description = "Churros de las Fiestas del Pino.\nCalientes. Misteriosamente. +45HP"
     self.heal_amount = 45
     self.price = 35
     self.can_sell = true

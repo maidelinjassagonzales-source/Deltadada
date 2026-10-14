@@ -4,7 +4,8 @@ local PCDMInterjection, super = Class(Object)
 function PCDMInterjection:init(lines, actor, face, callback)
     super.init(self, 0, 0)
     self.layer = BATTLE_LAYERS and BATTLE_LAYERS["top"] or 1000
-    self.lines = lines
+    -- caja de diálogo normal: 26 letras por línea con retrato, 33 sin él
+    self.lines = PCDM.pages(lines, face and 26 or 33, 3)
     self.index = 0
     self.actor = actor
     self.face = face
@@ -30,7 +31,7 @@ function PCDMInterjection:nextLine()
     if self.actor then tb:setActor(self.actor) end
     tb:setFace(self.face)
     local line = self.lines[self.index]
-    if self.actor == "aroy" then line = "[color:ff3a3a][shake:1]" .. line end
+    if self.actor == "aroy" and not line:find("^%[color") then line = "[color:ff3a3a][shake:1]" .. line end
     tb:setText(line, function() self:nextLine() end)
     tb.active = true
     tb.visible = true
