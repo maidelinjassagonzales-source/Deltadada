@@ -13,6 +13,11 @@ function PCDMEncounter:getVictoryText(text, money, xp)
 end
 
 function PCDMEncounter:onBattleStart()
+    -- la música del mapa nunca suena a la vez que la del combate
+    if Game.world and Game.world.music and Game.world.music:isPlaying() then
+        Game.world.music:pause()
+        Game.battle.resume_world_music = true
+    end
     if self.music_section == "jefe_motos" and Game.battle.music then
         PCDM.playReversedSlowed(Game.battle.music, "jefe_motos")
     end
@@ -21,6 +26,8 @@ end
 function PCDMEncounter:setMusic(section)
     self.music_section = section
     if section == "jefe_motos" then
+        -- sin música de combate normal: la canción invertida se pone al empezar
+        -- (y la del mapa se pausa en onBattleStart)
         self.music = nil
     else
         self.music = PCDM.musicId(section) or PCDM.musicId("jefe") or "battle"

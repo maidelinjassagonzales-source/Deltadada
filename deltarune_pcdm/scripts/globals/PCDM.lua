@@ -334,6 +334,58 @@ function PCDM.switchPOV(cutscene, ids, map, marker, title, subtitle, facing)
     cutscene:wait(cutscene:fadeIn(0.5))
 end
 
+--- Recarga el mapa actual en el mismo sitio (para que aparezcan/desaparezcan cosas)
+--- y coloca a los compañeros en fila detrás del líder, a la vista.
+function PCDM.reloadMap(c, facing)
+    local p = Game.world.player
+    local f = facing or p.facing
+    c:loadMap(Game.world.map.id, p.x, p.y, f)
+    c:alignFollowers(f)
+    c:attachFollowersImmediate()
+end
+
+--- Hace que los seguidores del mapa coincidan con Game.party sin recargar el mapa:
+--- quien sale del equipo se queda quieto en su sitio, quien entra aparece donde está
+--- su "doble" (stand_ins[id], p. ej. un NPC) y todos vuelven andando detrás del líder.
+function PCDM.syncFollowers(c, stand_ins)
+    local world = Game.world
+    local leaving = false
+    local want = {}
+    for i = 2, #Game.party do want[Game.party[i].id] = i end
+    for i = #world.followers, 1, -1 do
+        local f = world.followers[i]
+        local id = f.party or (f.actor and f.actor.id)
+        if not want[id] then
+            -- sale del equipo: se va andando (hacia abajo) en vez de desaparecer de golpe
+            world:removeFollower(f)
+            local npc = c:spawnNPC(f.actor.id, f.x, f.y, { facing = "down" })
+            f:remove()
+            Boss.leave(c, npc, 0, 220, 1.2, false)
+            leaving = true
+        end
+    end
+    for i = 2, #Game.party do
+        local id = Game.party[i].id
+        local found = false
+        for _, f in ipairs(world.followers) do
+            if (f.party or f.actor.id) == id then found = true end
+        end
+        if not found then
+            local src = stand_ins and stand_ins[id]
+            local fx, fy = world.player.x, world.player.y + 30
+            if src and src.parent then fx, fy = src.x, src.y end
+            world:spawnFollower(Game.party[i]:getActor(), { party = id, x = fx, y = fy })
+            if src and src.parent and not src:includes(Follower) then src:remove() end
+        end
+    end
+    table.sort(world.followers, function(a, b)
+        return (want[a.party or a.actor.id] or 99) < (want[b.party or b.actor.id] or 99)
+    end)
+    for _, f in ipairs(world.followers) do f:updateIndex() end
+    c:wait(c:attachFollowers())
+    if leaving then c:wait(0.8) end
+end
+
 --- Pantalla negra con texto (narración entre escenas)
 function PCDM.card(cutscene, title, subtitle, time)
     cutscene:wait(cutscene:fadeOut(0.4))

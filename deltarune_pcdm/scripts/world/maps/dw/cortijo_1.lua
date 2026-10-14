@@ -225,6 +225,7 @@ return {
           properties = {
           ["actor"] = "carpa",
           ["encounter"] = "ladrillo_carpa",
+          ["once"] = true,
           ["chase"] = true
         }
         },
@@ -234,14 +235,15 @@ return {
           properties = {
           ["actor"] = "ladrillo",
           ["encounter"] = "ladrillos",
+          ["once"] = true,
           ["chase"] = true
         }
         },
         {
           id = 25, name = "abascal", type = "npc", shape = "rectangle",
-          x = 1040, y = 336, width = 40, height = 40, rotation = 0, visible = true,
+          x = 1000, y = 296, width = 40, height = 40, rotation = 0, visible = true,
           properties = {
-          ["actor"] = "abascal",
+          ["actor"] = "abascal_montado",
           ["facing"] = "left",
           ["turn"] = true,
           ["cond"] = "not pcdm_abascal_hecho"

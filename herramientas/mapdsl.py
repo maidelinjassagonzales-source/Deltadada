@@ -149,7 +149,8 @@ class Map:
         self._obj("chest", "chest", tx * T, ty * T, T, T, p)
 
     def enemy(self, tx, ty, actor, encounter, **kw):
-        p = {"actor": actor, "encounter": encounter}
+        # once: un enemigo derrotado no vuelve a aparecer al volver al mapa
+        p = {"actor": actor, "encounter": encounter, "once": True}
         p.update(kw)
         self._obj("enemy", "enemy", tx * T, ty * T + 16, T, T, p)
 

@@ -60,7 +60,7 @@ return {
         end
     end,
     abascal = function(c)
-        local ab = c:getCharacter("abascal")
+        local ab = c:getCharacter("abascal_montado")
         if not ab then return end
         Assets.playSound("alert")
         c:text("* ¡¡ALTO!![wait:5] ¡¡AQUÍ NO PASA NADIE SIN\n  PASAR POR LA ADUANA!!", "shout", "abascal")
@@ -68,7 +68,7 @@ return {
         c:text("* ¡Una furra, un twink y un gitano![wait:5]\n* ¡Esto es una invasión!", "angry", "abascal")
         c:text("* Cariño, mi familia lleva aquí desde el\n  siglo XV.[wait:5] Antes que la tuya, seguro.", "smug", AN)
         c:text("* ¡RECONQUISTA![wait:5] ¡A POR ELLOS!", "shout", "abascal")
-        local r = Boss.fight(c, "abascal", "abascal", "abascal")
+        local r, npc = Boss.fight(c, "abascal", "abascal_montado", "abascal")
         PCDM.setFlag("abascal_hecho", true)
         if r == "killed" then
             c:text("* Abascal se ha deshecho.[wait:5] El caballo,\n  libre al fin, se aleja trotando.")
@@ -76,6 +76,17 @@ return {
             c:text("* ¡Vuela, caballito![wait:5] ¡Eres libre!", "happy", L)
             PCDM.goodBoy(c)
         elseif r == "spared" then
+            if npc and npc.parent then
+                -- se baja: el caballo se queda y él da cuatro pasos, agotado
+                local caballo = Sprite("objects/caballo", npc.x - 70, npc.y - 100)
+                caballo:setScale(2)
+                caballo.flip_x = true
+                caballo.layer = npc.layer
+                Game.world:addChild(caballo)
+                npc:setActor("abascal")
+                npc:setFacing("left")
+                c:wait(c:walkTo(npc, npc.x - 100, npc.y + 40, 1.6, "left"))
+            end
             c:text("* Abascal se baja del caballo.[wait:5] Por primera\n  vez en años, camina.[wait:5] Se cansa\n  muchísimo.")
         end
     end,
@@ -91,7 +102,7 @@ return {
         c:text("* Pablo, cariño, ya te he dicho que no.\n* No es no.[wait:5] En la Light World y en la Dark.", "angry", AN)
         c:text("* ¡¡SI NO ES POR LAS BUENAS, SERÁ POR LAS\n  MALAS!!", "shout", "pablo")
         c:text("* Pues por las malas.[wait:5] HEY, COME ON.", "angry", Y)
-        local r = Boss.fight(c, "pablo", "pablo", "pablo")
+        local r, npc = Boss.fight(c, "pablo", "pablo", "pablo")
         PCDM.setFlag("pablo_hecho", true)
         if r == "killed" then
             c:text("* Pablo se ha convertido en polvo.[wait:10]\n* Su móvil cae al suelo.[wait:5] Le llega una\n  notificación.")
@@ -100,11 +111,18 @@ return {
             c:text("* ...Le di mil oportunidades.", "sad", L)
             PCDM.goodBoy(c, "El incel ya no está.[wait:5] GOOD BOY.")
         elseif r == "spared" then
+            if npc and npc.parent then
+                c:wait(c:walkTo(npc, npc.x, npc.y - 36, 0.6, "down"))
+            end
             c:text("* Pablo se sienta en su trono y abre\n  Instagram.[wait:5] Le ha contestado alguien.")
             c:text("* [color:5ad1ff]@soporte_instagram[color:reset]:\n  Tu cuenta ha sido suspendida por spam.")
             c:text("* ...[wait:10]Vaya.", "crying", "pablo")
         end
-        c:text("* Ahora que Pablo ya no está en el trono...\n* La Fuente Oscura empieza a temblar.")
+        if r == "spared" then
+            c:text("* Pablo ya no os corta el paso.[wait:5] Está\n  demasiado ocupado con el móvil.")
+        else
+            c:text("* Ahora que Pablo ya no está en el trono...\n* La Fuente Oscura empieza a temblar.")
+        end
         c:text("* Tenemos que encontrar a los demás.\n* ¡Vamos!", "neutral", L)
     end,
     salida = function(c)

@@ -497,4 +497,6 @@ if __name__ == "__main__":
     import balas
     for k, v in balas.B().items():
         save(v, "bullets/%s" % k)
+    import abascal_caballo
+    abascal_caballo.main()
     print("OK")

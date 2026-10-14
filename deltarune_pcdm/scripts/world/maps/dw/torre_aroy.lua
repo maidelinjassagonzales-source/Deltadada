@@ -45,7 +45,7 @@ return {
         5, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 5,
         5, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 5,
         5, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 5,
-        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5
+        5, 5, 5, 5, 5, 5, 5, 5, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5
       }
     },
     {
@@ -118,7 +118,12 @@ return {
         },
         {
           id = 10, name = "", type = "", shape = "rectangle",
-          x = 40, y = 600, width = 640, height = 40, rotation = 0, visible = true,
+          x = 40, y = 600, width = 280, height = 40, rotation = 0, visible = true,
+          properties = {}
+        },
+        {
+          id = 11, name = "", type = "", shape = "rectangle",
+          x = 400, y = 600, width = 280, height = 40, rotation = 0, visible = true,
           properties = {}
         }
       }
@@ -129,11 +134,20 @@ return {
       properties = {},
       objects = {
         {
-          id = 11, name = "script", type = "script", shape = "rectangle",
+          id = 12, name = "script", type = "script", shape = "rectangle",
           x = 160, y = 360, width = 400, height = 40, rotation = 0, visible = true,
           properties = {
           ["cutscene"] = "dw_torre.final",
           ["once"] = true
+        }
+        },
+        {
+          id = 13, name = "transition", type = "transition", shape = "rectangle",
+          x = 320, y = 600, width = 80, height = 40, rotation = 0, visible = true,
+          properties = {
+          ["map"] = "dw/muro_2",
+          ["marker"] = "torre",
+          ["facing"] = "down"
         }
         }
       }
@@ -144,17 +158,17 @@ return {
       properties = {},
       objects = {
         {
-          id = 12, name = "spawn", type = "", shape = "rectangle",
+          id = 14, name = "spawn", type = "", shape = "rectangle",
           x = 380, y = 556, width = 0, height = 0, rotation = 0, visible = true,
           properties = {}
         },
         {
-          id = 13, name = "sur", type = "", shape = "rectangle",
+          id = 15, name = "sur", type = "", shape = "rectangle",
           x = 380, y = 556, width = 0, height = 0, rotation = 0, visible = true,
           properties = {}
         },
         {
-          id = 14, name = "centro", type = "", shape = "rectangle",
+          id = 16, name = "centro", type = "", shape = "rectangle",
           x = 380, y = 316, width = 0, height = 0, rotation = 0, visible = true,
           properties = {}
         }

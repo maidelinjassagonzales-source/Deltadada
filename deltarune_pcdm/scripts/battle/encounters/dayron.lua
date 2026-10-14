@@ -4,7 +4,12 @@ local encounter, super = Class(PCDMEncounter, "dayron")
 function encounter:init()
     super.init(self)
     self.text = "* ¡Gabriel contra Dayron![wait:5]\n* El duelo del siglo."
-    self:setMusic("jefe_dayron")
+    if DayronDistorter.findFile() then
+        -- Dayron.ogg distorsionado es la única música del combate (no se pisa con otra)
+        self.music = nil
+    else
+        self:setMusic("jefe_dayron")
+    end
     self:addEnemy("dayron")
 end
 

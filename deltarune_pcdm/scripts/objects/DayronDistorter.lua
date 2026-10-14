@@ -19,6 +19,11 @@ local function findDayronFile()
     return nil
 end
 
+--- ¿Está Dayron.ogg? (si está, es la ÚNICA música del combate)
+function DayronDistorter.findFile()
+    return findDayronFile()
+end
+
 function DayronDistorter:init()
     super.init(self, 0, 0)
     self.timer = 0

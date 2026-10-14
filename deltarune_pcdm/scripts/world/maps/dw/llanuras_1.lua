@@ -173,6 +173,7 @@ return {
           properties = {
           ["actor"] = "garra",
           ["encounter"] = "solo_garra",
+          ["once"] = true,
           ["chase"] = true
         }
         },

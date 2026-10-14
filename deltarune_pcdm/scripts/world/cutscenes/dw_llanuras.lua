@@ -58,7 +58,7 @@ return {
         c:text("* Os esperaré por aquí.[wait:5] Hablad conmigo\n  si necesitáis consejos.", "neutral", "percha")
         percha:remove()
         PCDM.setFlag("llanuras_intro", true)
-        c:loadMap("dw/llanuras_1", p.x, p.y, "down")
+        PCDM.reloadMap(c, "down")
     end,
     percha = function(c)
         local tips = {

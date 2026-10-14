@@ -182,6 +182,7 @@ return {
           properties = {
           ["actor"] = "tijera",
           ["encounter"] = "tijera_marine",
+          ["once"] = true,
           ["chase"] = true
         }
         },
@@ -191,6 +192,7 @@ return {
           properties = {
           ["actor"] = "silla",
           ["encounter"] = "sillas",
+          ["once"] = true,
           ["chase"] = true
         }
         },

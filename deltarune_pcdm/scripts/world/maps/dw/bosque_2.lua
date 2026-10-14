@@ -194,6 +194,7 @@ return {
           properties = {
           ["actor"] = "marine",
           ["encounter"] = "trio_andres",
+          ["once"] = true,
           ["chase"] = true
         }
         },

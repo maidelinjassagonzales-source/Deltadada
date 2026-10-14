@@ -191,6 +191,7 @@ return {
           properties = {
           ["actor"] = "papeleta",
           ["encounter"] = "papeleta_escano",
+          ["once"] = true,
           ["chase"] = true
         }
         },
@@ -200,6 +201,7 @@ return {
           properties = {
           ["actor"] = "pastilla_t",
           ["encounter"] = "hormonas_garra",
+          ["once"] = true,
           ["chase"] = true
         }
         },

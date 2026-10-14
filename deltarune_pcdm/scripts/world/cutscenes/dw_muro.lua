@@ -51,7 +51,7 @@ local M = {
         PCDM.setFlag("guaguas_activas", true)
         Assets.playSound("pcdm_bocina")
         c:text("* (¡Se han desbloqueado las [color:5ad1ff]Guaguas Global[color:reset]!)")
-        c:loadMap("dw/muro_1", p.x, p.y, "right")
+        PCDM.reloadMap(c, "right")
         if PCDM.flag("hormigas_vienen") and not PCDM.isDone("hormigas") then
             c:gotoCutscene("dw_muro.hormigas")
         end
@@ -81,7 +81,7 @@ local M = {
         c:text("* Nadie sabe más de muros que yo.[wait:5]\n* Nadie.[wait:5] Me lo dicen siempre:[wait:5]\n* \"Señor, sabe usted mucho de muros\".", "smug", "trump")
         c:text("* Furros, gitanos, twinks...[wait:5] ¡FUERA![wait:5]\n* ¡Y que el muro lo paguen ellos!", "angry", "trump")
         c:text("* Te voy a poner un arancel del 200% en\n  la cara, naranjito.", "angry", G)
-        local r = Boss.fight(c, "trump", "trump", "trump")
+        local r, npc = Boss.fight(c, "trump", "trump", "trump")
         PCDM.setFlag("trump_hecho", true)
         if r == "killed" then
             c:text("* Trump se ha convertido en polvo naranja.")
@@ -114,11 +114,32 @@ local M = {
         end
         c:text("* El muro se abre por la mitad...[wait:5]\n* Detrás hay unas escaleras.")
         local p = Game.world.player
-        c:loadMap("dw/muro_1", p.x, p.y, p.facing)
+        PCDM.reloadMap(c)
     end,
     dayron = function(c)
         local d = c:getCharacter("dayron")
         if not d then return end
+        local p = Game.world.player
+        -- el grupo se pone al lado de Lucía (si no, los compañeros quedan detrás de ella)
+        c:detachFollowers()
+        local gab = c:getCharacter("gabriel")
+        local llega_gabriel = false
+        if not gab then
+            -- Gabriel no iba en el equipo: llega corriendo
+            gab = c:spawnNPC("gabriel", p.x, p.y + 200, { facing = "up" })
+            llega_gabriel = true
+        end
+        local otros = {}
+        for _, f in ipairs(Game.world.followers or {}) do
+            if f ~= gab then table.insert(otros, f) end
+        end
+        c:walkTo(gab, p.x - 60, p.y, llega_gabriel and 0.9 or 0.5, "up")
+        if otros[1] then c:walkTo(otros[1], p.x + 60, p.y, 0.5, "up") end
+        if otros[2] then c:walkTo(otros[2], p.x + 120, p.y, 0.5, "up") end
+        c:wait(llega_gabriel and 1 or 0.6)
+        if llega_gabriel then
+            c:text("* ¡Esperad![wait:5] ¡Si está Dayron, voy yo!", "shout", G)
+        end
         c:text("* Por fin llegáis.", "smug", "dayron")
         c:text("* ¡¡DAYRON!!", "shout", G)
         c:text("* Lucía.[wait:5] Mírate.[wait:5] Orejas.[wait:5] Cola.[wait:5]\n* Esto no es normal.[wait:5] Esto no eres tú.", "neutral", "dayron")
@@ -127,6 +148,7 @@ local M = {
         c:text(T("...Por mi bien."), "sad", L)
         c:text("* Lucía, no le escuches.", "angry", G)
         c:text("* Gabriel da un paso al frente.")
+        c:wait(c:walkTo(gab, gab.x + 30, gab.y - 70, 0.6, "up"))
         c:text("* Chicos.[wait:5] Esto es entre él y yo.", "angry", G)
         c:text("* ¿Tú solo, retramonguer?", "grin", "dayron")
         c:text("* Susie lucharía sola.[wait:10]\n* Así que yo también.", "shout", G)
@@ -135,7 +157,7 @@ local M = {
         local ids = {}
         for _, chara in ipairs(Game.party) do table.insert(ids, chara.id) end
         PCDM.setParty({ "gabriel" })
-        local r = Boss.fight(c, "dayron", "dayron", "dayron")
+        local r = Boss.fight(c, "dayron", "dayron", "dayron", true)
         PCDM.setParty({ "lucia", "gabriel", (ids[3] ~= "gabriel" and ids[3]) or (ids[2] ~= "gabriel" and ids[2]) or "angel" })
         refreshParty()
         PCDM.setFlag("dayron_hecho", true)
@@ -143,6 +165,7 @@ local M = {
             c:text("* Dayron cae de rodillas.", "sad")
             c:text("* Yo...[wait:5] solo quería...[wait:5] que todo fuera\n  normal...", "crying", "dayron")
             c:text("* Lo normal es que cada uno sea quien es,\n  bro.", "sad", G)
+            Boss.dust(c, d)
             c:text("* Dayron se convierte en polvo.[wait:5]\n* Solo queda un sticker con su cara en el\n  suelo.")
             Boss.reward(c, "dayron")
             PCDM.aroy(c, { "...", "Se acabó Dayron.[wait:5] Se acabaron los\ncambios de guion.",
@@ -150,12 +173,15 @@ local M = {
         elseif r == "spared" then
             c:text("* ...Vale.[wait:5] Vale, retramonguer.[wait:5] Tú ganas.", "sad", "dayron")
             c:text("* Pero esto no se ha acabado.[wait:5] Algún día\n  Lucía me dará la razón.", "angry", "dayron")
+            Boss.leave(c, d, 0, 260, 1.4, false)
             c:text("* Dayron se va.[wait:5] Deja caer un sticker con\n  su cara.")
             PCDM.aroy(c, { "¿Le has DEJADO IR?[wait:5]\n¿Al que me quiere cambiar el guion?",
                 "...Bueno.[wait:5] Tú sabrás." }, "angry")
         end
-        local p = Game.world.player
-        c:loadMap("dw/muro_2", p.x, p.y, "up")
+        -- el grupo vuelve andando detrás de Lucía (Gabriel incluido, aunque no viniera en el equipo)
+        PCDM.syncFollowers(c, { gabriel = gab })
+        -- recargar para que aparezca el camino a la Torre
+        PCDM.reloadMap(c, "up")
         c:text("* Al fondo se ve una torre negra que gotea\n  algo rojo.")
     end,
 }
@@ -168,7 +194,7 @@ for id, line in pairs(AMIGOS) do
             if PCDM.swapMember(c, id) then
                 refreshParty()
                 local p = Game.world.player
-                c:loadMap(Game.world.map.id, p.x, p.y, p.facing)
+                PCDM.reloadMap(c)
             end
         end
     end

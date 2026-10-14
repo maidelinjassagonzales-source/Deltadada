@@ -32,7 +32,7 @@ return {
         c:text("* ¿Qué cojones es esto?", "surprised", G)
         c:text("* ¡Me están censurando![wait:5] ¡Esto es una\n  dictadura!", "shout", "vito")
         c:text("* Nadie te ha dicho nada, tío.", "annoyed", AL)
-        local r = Boss.fight(c, "vito", "vito", "vito")
+        local r, npc = Boss.fight(c, "vito", "vito", "vito")
         PCDM.setFlag("vito_hecho", true)
         if r == "killed" then
             c:text("* Vito Quiles se ha convertido en polvo...[wait:5]\n* y en un micrófono huérfano.")
@@ -40,6 +40,7 @@ return {
             c:text("* Bro.[wait:5] Ya no hay más preguntas\n  incómodas.", "grin", G)
             PCDM.goodBoy(c)
         elseif r == "spared" then
+            Boss.leave(c, npc, 320, 0, 0.9, false)
             c:text("* Vito se va corriendo a grabar un vídeo\n  para TikTok:[wait:5] \"ME HAN AGREDIDO\".")
             c:text("* Nadie te ha agredido, subnormal.", "annoyed", G)
         end
@@ -55,7 +56,7 @@ return {
         c:text("* No sé.[wait:5] Me dijo que tenía que \"hablar\n  con la furra\".", "closed", "angelpedro")
         c:text("* Se acabó.[wait:5] Apártate, Angel Pedro.", "angry", G)
         c:text("* ¿Esto es un combate?[wait:5] Vale.[wait:5]\n* No entiendo nada, pero rompo sillas.", "happy", "angelpedro")
-        local r = Boss.fight(c, "angelpedro", "angelpedro", "angelpedro")
+        local r, npc = Boss.fight(c, "angelpedro", "angelpedro", "angelpedro")
         PCDM.setFlag("angelpedro_hecho", true)
         if r == "killed" then
             c:text("* Angel Pedro no entendió nada.[wait:10]\n* Ni siquiera esto.")

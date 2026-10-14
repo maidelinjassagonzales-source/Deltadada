@@ -89,7 +89,7 @@ return {
         lucia:setActor("lucia_sg")
         lu:remove()
         PCDM.setParty({ "dayron", "lucia" })
-        c:loadMap("dw/sg_camino", p.x, p.y, "right")
+        PCDM.reloadMap(c, "right")
         c:text("* Así mejor.[wait:5] Ahora eres una chica normal.", "grin", D)
         c:text("* ...", "sad", L)
         c:text("* Venga.[wait:5] Vamos a sacar a todos de aquí.[wait:5]\n* Les guste o no.", "smug", D)

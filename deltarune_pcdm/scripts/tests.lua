@@ -477,6 +477,243 @@ function tests.guagua(t)
     t:finish()
 end
 
+-- ¿Suena la música del mapa a la vez que la del combate?
+function tests.musica_combate(t)
+    t:wait(0.5)
+    PCDM.setParty({ "lucia", "yerover", "angel" })
+    local function sources()
+        local n = love.audio.getActiveSourceCount and love.audio.getActiveSourceCount() or -1
+        return n
+    end
+    local casos = {
+        { "dw/llanuras_1", "garra_abanico" }, { "dw/bosque_1", "vito" }, { "dw/plato_2", "motos" },
+        { "dw/muro_2", "dayron" }, { "dw/cortijo_1", "abascal" }, { "dw/torre_aroy", "andres" },
+    }
+    for _, cs in ipairs(casos) do
+        Game.world:loadMap(cs[1], "spawn", "down")
+        for _, e in ipairs(Game.world.stage:getObjects(ChaserEnemy)) do e:remove() end
+        t:wait(1.5)
+        local wm = Game.world.music
+        t:log(cs[1], "mapa suena:", tostring(wm.current), tostring(wm:isPlaying()), "fuentes:", sources())
+        Game:encounter(cs[2], true)
+        t:waitBattle(5)
+        t:wait(2.5)
+        local bm = Game.battle.music
+        t:log("  combate", cs[2], "-> mapa:", tostring(wm.current), "playing=" .. tostring(wm:isPlaying()),
+            "| combate:", tostring(bm.current), "playing=" .. tostring(bm:isPlaying()), "| fuentes activas:", sources())
+        Game.battle:returnToWorld()
+        t:wait(1.5)
+        t:log("  vuelta -> mapa:", tostring(wm.current), "playing=" .. tostring(wm:isPlaying()))
+    end
+    t:finish()
+end
+
+-- Un enemigo derrotado no vuelve a salir al volver al mapa
+function tests.reaparecer(t)
+    t:wait(0.5)
+    PCDM.setParty({ "lucia", "yerover", "angel" })
+    PCDM.setFlag("llanuras_intro", true)
+    Game.world:loadMap("dw/llanuras_2", "spawn", "down")
+    t:wait(1)
+    local chasers = Game.world.stage:getObjects(ChaserEnemy)
+    t:log("enemigos al entrar:", #chasers)
+    local ch = chasers[1]
+    Game:encounter(ch.encounter, true, ch, ch)  -- igual que al tocarlo
+    t:waitBattle(5)
+    t:wait(2)
+    -- ganar: todos los enemigos fuera
+    for _, e in ipairs(Game.battle.enemies) do e:defeat("VIOLENCED", true) end
+    t:auto({ "z" }, 0.15)
+    local ok = t:waitNoBattle(60)
+    t:auto(nil)
+    t:wait(1)
+    local vivos = 0
+    for _, e in ipairs(Game.world.stage:getObjects(ChaserEnemy)) do if e.parent then vivos = vivos + 1 end end
+    t:log("combate terminado:", tostring(ok), "enemigos tras ganar:", vivos)
+    Game.world:loadMap("dw/llanuras_1", "spawn", "down")
+    t:wait(1)
+    Game.world:loadMap("dw/llanuras_2", "spawn", "down")
+    t:wait(1)
+    local vuelta = 0
+    for _, e in ipairs(Game.world.stage:getObjects(ChaserEnemy)) do if e.parent then vuelta = vuelta + 1 end end
+    t:log("enemigos al volver:", vuelta)
+    t:finish()
+end
+
+-- Abascal montado a caballo, y el caballo huyendo cuando muere
+function tests.abascal(t)
+    t:wait(0.5)
+    PCDM.setParty({ "lucia", "yerover", "angel" })
+    Game.world:loadMap("dw/cortijo_1", "spawn", "down")
+    for _, e in ipairs(Game.world.stage:getObjects(ChaserEnemy)) do e:remove() end
+    Game:encounter("abascal", true)
+    t:waitBattle(5)
+    t:wait(2.5)
+    t:shot("montado")
+    local e = Game.battle.enemies[1]
+    e:hurt(60, Game.battle.party[1])
+    t:wait(0.25)
+    t:shot("golpe")
+    t:wait(1)
+    e:hurt(e.health + 50, Game.battle.party[1])
+    t:wait(0.5)
+    t:shot("muere")
+    t:wait(0.6)
+    t:shot("caballo_huye")
+    t:log("muerto:", tostring(PCDM.isKilled("abascal")))
+    t:finish()
+end
+
+function tests.abascal_mapa(t)
+    t:wait(0.5)
+    PCDM.setParty({ "lucia", "yerover", "angel" })
+    Game.world:loadMap("dw/cortijo_1", "spawn", "down")
+    for _, e in ipairs(Game.world.stage:getObjects(ChaserEnemy)) do e:remove() end
+    local ab = Game.world:getCharacter("abascal_montado")
+    Game.world.player:setPosition(ab.x - 200, ab.y)
+    t:wait(1)
+    t:shot("mapa")
+    Game.world:startCutscene("dw_cortijo.abascal")
+    t:auto({ "z", "z", "x" }, 0.12)
+    t:waitBattle(40)
+    t:wait(2)
+    t:shot("combate")
+    local e = Game.battle and Game.battle.enemies[1]
+    if e then e:hurt(e.health + 50, Game.battle.party[1]) end
+    t:waitNoBattle(60)
+    t:wait(2)
+    t:auto(nil)
+    t:shot("despues")
+    t:log("muerto:", tostring(PCDM.isKilled("abascal")), "npc sigue:", tostring(Game.world:getCharacter("abascal_montado") ~= nil))
+    t:finish()
+end
+
+-- Se puede bajar de la azotea del Muro y volver de la Torre
+function tests.muro_volver(t)
+    t:wait(0.5)
+    PCDM.setParty({ "lucia", "gabriel", "angel" })
+    for _, f in ipairs({ "reunion", "trump_hecho", "dayron_hecho" }) do PCDM.setFlag(f, true) end
+    local function salirPor(destino)
+        for _, ev in ipairs(Game.world.map.events) do
+            if ev:includes(Transition) and ev.target.map == destino then
+                Game.world.player:setPosition(ev.x + ev.width / 2, ev.y + ev.height / 2)
+                return true
+            end
+        end
+        return false
+    end
+    Game.world:loadMap("dw/torre_aroy", "sur", "up")
+    t:wait(1)
+    t:log("torre -> muro_2 existe:", tostring(salirPor("dw/muro_2")))
+    t:wait(2)
+    t:log("ahora en:", Game.world.map.id)
+    t:shot("azotea")
+    t:log("muro_2 -> muro_1 existe:", tostring(salirPor("dw/muro_1")))
+    t:wait(2)
+    t:log("ahora en:", Game.world.map.id)
+    t:shot("muro")
+    t:log("muro_1 -> muro_2 existe:", tostring(salirPor("dw/muro_2")))
+    t:wait(2)
+    t:log("ahora en:", Game.world.map.id)
+    t:finish()
+end
+
+-- ¿Se ven los compañeros que siguen al líder?
+function tests.seguidores(t)
+    t:wait(0.5)
+    PCDM.setParty({ "lucia", "gabriel", "angel" })
+    for _, f in ipairs({ "reunion", "trump_hecho" }) do PCDM.setFlag(f, true) end
+    Game.world:loadMap("dw/muro_1", "muro", "up")
+    t:wait(1)
+    local function info(tag)
+        local fs = Game.world.followers or {}
+        local parts = {}
+        for _, f in ipairs(fs) do
+            table.insert(parts, string.format("%s(%d,%d,vis=%s)", f.actor and f.actor.id or "?", f.x, f.y, tostring(f.visible)))
+        end
+        t:log(tag, "jugador", Game.world.player.actor.id, math.floor(Game.world.player.x), math.floor(Game.world.player.y), "| seguidores:", #fs, table.concat(parts, " "))
+    end
+    info("al cargar:")
+    -- andar hacia abajo un rato (como un jugador)
+    love.event.push("keypressed", "down", "down", false)
+    t:wait(1.2)
+    love.event.push("keyreleased", "down", "down")
+    t:wait(0.5)
+    info("tras andar:")
+    t:shot("andando")
+    t:finish()
+end
+
+-- Escena Gabriel vs Dayron: el grupo se ve, y en el combate solo suena Dayron.ogg
+function tests.dayron_escena(t)
+    t:wait(0.5)
+    local equipo = os.getenv("PCDM_EQUIPO") == "sin_gabriel" and { "lucia", "isra", "angel" } or { "lucia", "gabriel", "angel" }
+    PCDM.setParty(equipo)
+    for _, f in ipairs({ "reunion", "trump_hecho" }) do PCDM.setFlag(f, true) end
+    Game.world:loadMap("dw/muro_2", "sur", "up")
+    t:wait(1)
+    -- andar hasta la línea del script, como un jugador
+    love.event.push("keypressed", "up", "up", false)
+    t:wait(function() return Game.world:hasCutscene() end)
+    love.event.push("keyreleased", "up", "up")
+    t:wait(2.5)
+    t:shot("grupo")
+    t:auto({ "z" }, 0.12)
+    t:wait(function() return Game.world.cutscene and Game.world.cutscene.textbox and
+        tostring(Game.world.cutscene.textbox:getText()):find("paso al frente") end)
+    t:wait(1.2)
+    t:shot("paso_al_frente")
+    t:waitBattle(60)
+    t:wait(3)
+    local wm, bm = Game.world.music, Game.battle and Game.battle.music
+    t:log("combate: mapa suena=" .. tostring(wm:isPlaying()), "música combate=" .. tostring(bm and bm:isPlaying()),
+        "Dayron.ogg=" .. tostring(Game.battle and Game.battle.encounter.distorter and Game.battle.encounter.distorter.main and Game.battle.encounter.distorter.main:isPlaying()))
+    t:shot("combate")
+    t:auto(nil)
+    t:finish()
+end
+
+-- Escena de jefe completa: PCDM_ESCENA=dayron|pablo|vito|motos|abascal, PCDM_FINAL=matar|perdonar
+local ESCENAS = {
+    dayron = { map = "dw/muro_2", marker = "sur", cs = "dw_muro.dayron", flags = { "reunion", "trump_hecho" }, party = { "lucia", "gabriel", "angel" } },
+    pablo = { map = "dw/cortijo_2", marker = "spawn", cs = "dw_cortijo.pablo", flags = {}, party = { "lucia", "yerover", "angel" } },
+    vito = { map = "dw/bosque_1", marker = "spawn", cs = "dw_bosque.vito", flags = {}, party = { "gabriel", "isra", "alejandro" } },
+    motos = { map = "dw/plato_2", marker = "spawn", cs = "dw_plato.motos", flags = { "xibin_unido" }, party = { "carmen", "xibin", "julio" } },
+    abascal = { map = "dw/cortijo_1", marker = "spawn", cs = "dw_cortijo.abascal", flags = {}, party = { "lucia", "yerover", "angel" } },
+}
+function tests.escena_jefe(t)
+    t:wait(0.5)
+    local e = ESCENAS[os.getenv("PCDM_ESCENA") or "dayron"]
+    local final = os.getenv("PCDM_FINAL") or "matar"
+    if os.getenv("PCDM_EQUIPO") == "sin_gabriel" then e.party = { "lucia", "isra", "angel" } end
+    PCDM.setParty(e.party)
+    for _, f in ipairs(e.flags) do PCDM.setFlag(f, true) end
+    Game.world:loadMap(e.map, e.marker, "up")
+    for _, ch in ipairs(Game.world.stage:getObjects(ChaserEnemy)) do ch:remove() end
+    t:wait(1)
+    Game.world:startCutscene(e.cs)
+    t:auto({ "z" }, 0.12)
+    t:waitBattle(80)
+    t:auto(nil)
+    t:wait(2)
+    for _, en in ipairs(Game.battle.enemies) do
+        if final == "perdonar" then en:spare() else en:hurt(en.health + 99, Game.battle.party[1]) end
+    end
+    t:auto({ "z" }, 0.15)
+    t:waitNoBattle(60)
+    t:wait(0.6)
+    t:shot("tras_combate")
+    t:wait(function() return not Game.world:hasCutscene() end)
+    t:auto(nil)
+    t:wait(1)
+    t:shot("final")
+    local fs = {}
+    for _, f in ipairs(Game.world.followers) do table.insert(fs, f.actor.id .. "@" .. math.floor(f.x) .. "," .. math.floor(f.y)) end
+    t:log("resultado:", final, "| jugador", math.floor(Game.world.player.x) .. "," .. math.floor(Game.world.player.y),
+        "| seguidores:", table.concat(fs, " "), "| equipo:", table.concat((function() local r = {} for _, c in ipairs(Game.party) do table.insert(r, c.id) end return r end)(), ","))
+    t:finish()
+end
+
 -- Comprueba que la música de Drive se encuentra, se invierte y suena
 function tests.musica(t)
     t:wait(0.5)

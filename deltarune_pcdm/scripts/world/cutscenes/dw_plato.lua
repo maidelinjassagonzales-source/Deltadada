@@ -39,7 +39,7 @@ return {
         if x then x:remove() end
         PCDM.setFlag("xibin_unido", true)
         local p = Game.world.player
-        c:loadMap("dw/plato_1", p.x, p.y, "down")
+        PCDM.reloadMap(c, "down")
         c:text("* (¡Xibin se ha unido al grupo!)")
     end,
     yolanda = function(c)
@@ -85,7 +85,7 @@ return {
         c:text("* ¡NO!", "angry", C)
         c:text("* Hoy no viene a promocionar ninguna peli,\n  pero viene a PELEAR.[wait:5] ¡TRANCAS!\n* ¡BARRANCAS![wait:5] ¡MÚSICA!", "shout", "motos")
         c:text("* (La música del plató empieza a sonar...\n  ...al revés.[wait:5] Y lentísima.)")
-        local r = Boss.fight(c, "motos", "motos", "motos")
+        local r, npc = Boss.fight(c, "motos", "motos", "motos")
         PCDM.setFlag("motos_hecho", true)
         if r == "killed" then
             c:text("* Pablo Motos se ha deshecho como un\n  decorado de cartón.")
@@ -95,6 +95,7 @@ return {
             PCDM.setFlag("hormigas_vienen", true)
             PCDM.goodBoy(c)
         elseif r == "spared" then
+            Boss.leave(c, npc, 0, -160, 1.2, false)
             c:text("* Pablo Motos se va a los anuncios.[wait:5]\n* \"Volvemos después de la publicidad\".")
             c:text("* Nunca vuelve.")
         end

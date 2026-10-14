@@ -217,6 +217,7 @@ return {
           properties = {
           ["actor"] = "dibujo",
           ["encounter"] = "dibujo_garra",
+          ["once"] = true,
           ["chase"] = true
         }
         },
@@ -226,6 +227,7 @@ return {
           properties = {
           ["actor"] = "pastilla_e",
           ["encounter"] = "pastillas",
+          ["once"] = true,
           ["chase"] = true
         }
         },
@@ -235,6 +237,7 @@ return {
           properties = {
           ["actor"] = "sticker1",
           ["encounter"] = "stickers",
+          ["once"] = true,
           ["chase"] = true
         }
         },

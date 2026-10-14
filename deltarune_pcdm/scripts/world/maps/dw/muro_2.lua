@@ -155,6 +155,15 @@ return {
           ["facing"] = "up",
           ["cond"] = "pcdm_dayron_hecho"
         }
+        },
+        {
+          id = 14, name = "transition", type = "transition", shape = "rectangle",
+          x = 360, y = 600, width = 80, height = 40, rotation = 0, visible = true,
+          properties = {
+          ["map"] = "dw/muro_1",
+          ["marker"] = "muro",
+          ["facing"] = "down"
+        }
         }
       }
     },
@@ -164,13 +173,18 @@ return {
       properties = {},
       objects = {
         {
-          id = 14, name = "spawn", type = "", shape = "rectangle",
+          id = 15, name = "spawn", type = "", shape = "rectangle",
           x = 420, y = 556, width = 0, height = 0, rotation = 0, visible = true,
           properties = {}
         },
         {
-          id = 15, name = "sur", type = "", shape = "rectangle",
+          id = 16, name = "sur", type = "", shape = "rectangle",
           x = 420, y = 556, width = 0, height = 0, rotation = 0, visible = true,
+          properties = {}
+        },
+        {
+          id = 17, name = "torre", type = "", shape = "rectangle",
+          x = 420, y = 196, width = 0, height = 0, rotation = 0, visible = true,
           properties = {}
         }
       }
