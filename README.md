@@ -46,7 +46,15 @@ Ya vienen incluidas las canciones de la carpeta de Drive `deltarunekdadas`:
 | `assets/music/jefe_motos/pablo_motos_revert.ogg` | La pelea contra Pablo Motos: ya viene **invertida** y el mod la pone **slowed** al reproducirla |
 | `assets/sounds/Dayron.ogg` | De fondo en la pelea Gabriel vs Dayron, con eco, reverb y distorsión que van cambiando |
 
-El resto del juego lleva **música original compuesta para el mod** (estilo chiptune): un tema distinto
+**Música de DELTARUNE y UNDERTALE:** si tienes los juegos instalados (Steam, en cualquier biblioteca), el
+mod los encuentra solo al arrancar y usa su banda sonora en el momento adecuado: *Field of Hopes and
+Dreams* en las Llanuras, *Rude Buster* en los combates, *Card Castle* en el Cortijo, *Chaos King* contra el
+Rey del Armario, *[BIG SHOT]* contra Trump, *Spear of Justice* contra Netanyahu, *Bonetrousle* contra Angel
+Pedro, *Battle Against a True Hero* contra Andrés... El mod **no incluye** esas canciones: las lee de tu copia
+de los juegos. Si los tienes en otra carpeta, crea un archivo `rutas_juegos.txt` al lado de
+`DeltarunePCDM.exe` con la ruta de cada juego en una línea (por ejemplo `D:\Juegos\DELTARUNE`).
+
+Si no tienes los juegos, el resto lleva **música original compuesta para el mod** (estilo chiptune): un tema distinto
 para cada zona y para cada jefe (36 en total), generado con `herramientas/musica_chip.py`.
 Cada parte del juego busca su canción en `deltarune_pcdm/assets/music/<sección>/`: si pones ahí otra
 canción, se usa esa. Para meter la música de **DELTARUNE y UNDERTALE** desde tus juegos

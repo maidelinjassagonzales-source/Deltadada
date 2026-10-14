@@ -158,16 +158,30 @@ PCDM.MUSIC_FALLBACK = {
     momento_incomodo        = { "none" },
 }
 
+-- Orden de preferencia para cada sección:
+--  1) canciones tuyas en assets/music/<sección>/ (las de Drive)
+--  2) la canción de DELTARUNE/UNDERTALE que toca en ese momento, si tienes los juegos
+--  3) la música original del mod (pcdm_<sección>.ogg)
+--  4) la música que trae Kristal
 function PCDM.findMusic(section)
     if not section then return nil end
     local prefix = section .. "/"
-    local best
+    local own, generated
     for id, _ in pairs(Assets.data.music or {}) do
         if id:sub(1, #prefix) == prefix then
-            if not best or id < best then best = id end
+            if id:sub(#prefix + 1, #prefix + 5) == "pcdm_" then
+                generated = generated or id
+            elseif not own or id < own then
+                own = id
+            end
         end
     end
-    if best then return best end
+    if own then return own end
+    if MusicaJuegos and MusicaJuegos.music then
+        local game = MusicaJuegos.music(section)
+        if game then return game end
+    end
+    if generated then return generated end
     if Assets.getMusicPath(section) then return section end
     for _, fb in ipairs(PCDM.MUSIC_FALLBACK[section] or {}) do
         if fb == "none" then return nil end

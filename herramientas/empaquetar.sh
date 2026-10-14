@@ -48,6 +48,12 @@ DELTARUNE PCDM - Capítulo 1: ¡SAL DEL ARMARIO!
    (sale porque el .exe no está firmado, no es un virus).
 3. En el menú elige una partida vacía para empezar.
 
+Música: si tienes DELTARUNE y/o UNDERTALE instalados en Steam, el mod usa su banda sonora
+automáticamente (no la incluye: la lee de tus juegos). Si están en otra carpeta, crea aquí un
+archivo rutas_juegos.txt con la ruta de cada juego en una línea, por ejemplo:
+    D:\Juegos\DELTARUNE
+    D:\Juegos\Undertale
+
 Controles: flechas para moverte, Z o Enter para aceptar, X o Shift para cancelar/correr, C o Ctrl para el menú.
 F4 o Alt+Enter: pantalla completa.
 

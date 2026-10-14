@@ -18,6 +18,9 @@ jefe_dayron, jefe_aroy, jefe_andres, papa_francisco, tienda, final_neutral,
 final_verdadero, final_furrygrave, ruta_furrygrave, jefe_vito, jefe_angelpedro,
 jefe_abascal, jefe_pablo, jefe_trump, jefe_netanyahu.
 
+Si tienes DELTARUNE / UNDERTALE instalados, el mod usa su música en cada sección
+(scripts/globals/MusicaJuegos.lua decide qué canción va en cada momento).
+Orden: tus canciones de esta carpeta > música de tus juegos > pcdm_<sección>.ogg.
 Las canciones pcdm_<sección>.ogg son música original compuesta para el mod
 (herramientas/musica_chip.py). Si metes otra canción en una carpeta, borra la
 pcdm_*.ogg de esa carpeta y sonará la tuya.

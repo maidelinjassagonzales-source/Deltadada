@@ -15,6 +15,9 @@ function Mod:init()
         return DecoSprite(data.x, data.y, data.properties)
     end)
 
+    -- Música de DELTARUNE y UNDERTALE de tus juegos instalados (si los tienes)
+    MusicaJuegos.init()
+
     -- Los textos largos se reparten solos en varias cajas
     PCDM.installTextHooks()
 
