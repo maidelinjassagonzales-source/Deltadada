@@ -12,7 +12,21 @@ píxel a píxel con los scripts de `herramientas/`.
 
 ---
 
-## Instalación
+## 🎮 Jugar YA (sin instalar nada)
+
+**Windows:** descarga [DeltarunePCDM-Windows.zip](https://github.com/maidelinjassagonzales-source/Deltadada/raw/refs/heads/claude/deltarune-undertale-mod-h21jsh/descargas/DeltarunePCDM-Windows.zip),
+descomprímelo y haz doble clic en **`DeltarunePCDM.exe`**. En el menú, *Start game*.
+Si Windows dice "Windows protegió su PC": *Más información* → *Ejecutar de todas formas*
+(sale porque el .exe no está firmado).
+
+**Mac / Linux / Android:** instala [LÖVE 11.5](https://love2d.org) y abre
+[DeltarunePCDM.love](https://github.com/maidelinjassagonzales-source/Deltadada/raw/refs/heads/claude/deltarune-undertale-mod-h21jsh/descargas/DeltarunePCDM.love) con él.
+
+Ya lleva dentro el motor (Kristal), el mod y la música. **F4** o **Alt+Enter**: pantalla completa.
+
+---
+
+## Instalación como mod de Kristal (para quien ya use Kristal)
 
 1. Descarga Kristal: <https://github.com/KristalTeam/Kristal/releases> (o el código fuente y
    [LÖVE 11.5](https://love2d.org)).
@@ -107,6 +121,7 @@ Las **guaguas globales** (paradas amarillas) te llevan a los sitios que ya has v
 | `instalar_musica.py` | Coloca la música en `assets/music/<sección>/` |
 | `verificar.py` | Comprueba que existen todas las referencias (cinemáticas, mapas, sprites, objetos…) |
 | `probar.sh` | Lanza el mod sin pantalla con pruebas automáticas y saca capturas |
+| `empaquetar.sh` | Crea `descargas/` (el .exe de Windows y el .love listos para jugar) |
 
 ```
 pip install pillow
