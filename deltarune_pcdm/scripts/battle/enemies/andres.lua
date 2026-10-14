@@ -61,6 +61,10 @@ function enemy:sendSoul()
         "* El Papa Francisco levanta la mano y bendice\n  el alma de " .. SOUL_NAMES[id] .. ".",
         "* ¡¡AL INFIERNO!![wait:5]\n* El alma de " .. SOUL_NAMES[id] .. " cae al infierno gritando.",
     }
+    -- cada alma que se va le arranca un trozo de armadura
+    local chunk = math.floor(self.max_health * 0.075)
+    self.health = math.max(math.floor(self.max_health * 0.25), self.health - chunk)
+    self:statusMessage("damage", chunk, { 1, 0.85, 0.3 })
     if #self.souls == 0 then
         self.damage_mult = nil
         table.insert(lines, "* ¡Tijerafang ya no tiene almas![wait:5]\n* ¡Ahora es VULNERABLE!")
